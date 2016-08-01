@@ -42,7 +42,7 @@ var SelectR = React.createClass({
       pageSize: 10,
       placeholder: 'Please select from the dropdown or type to filter',
       rootParentId: 'inner-content',
-      selectElementClass: '', // 'hidden',
+      selectElementClass: 'hidden',
       selectElementName: '',
       selectOptionsListWrapperClass: '',
       spinnerImgPath: '/assets/select2-spinner.gif',
