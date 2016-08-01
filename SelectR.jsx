@@ -1,4 +1,4 @@
-BuyerApp.Components.GmailSelect = React.createClass({
+var SelectR = React.createClass({
   propTypes: {
     AJAXSpinnerComponentFactory: React.PropTypes.func,
     AJAXSpinnerComponentProps: React.PropTypes.object,
