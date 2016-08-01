@@ -1,0 +1,152 @@
+// INPUT-CONTAINER
+$input-container-border-bottom-left-radius: 4px;
+$input-container-border-bottom-right-radius: 4px;
+$input-container-border-top-left-radius: 4px;
+$input-container-border-top-right-radius: 4px;
+$input-container-border-color: #CCC;
+$input-container-border-style: solid;
+$input-container-border-width: 1px;
+$input-container-active-border-bottom-left-radius: 0px;
+$input-container-active-border-bottom-right-radius: 0px;
+// INPUT-CONTAINER-LIST
+$input-container-list-margin: 5px 0 5px 10px;
+// INPUT-LIST-ITEMS
+$input-list-item-background-attachment: initial;
+$input-list-item-background-color: #CCC;
+$input-list-item-background-image: none;
+$input-list-item-background-position: initial;
+$input-list-item-background-repeat: initial;
+$input-list-item-border-bottom-left-radius: 4px;
+$input-list-item-border-bottom-right-radius: 4px;
+$input-list-item-border-top-left-radius: 4px;
+$input-list-item-border-top-right-radius: 4px;
+$input-list-item-border-color: #AAA;
+$input-list-item-border-style: solid;
+$input-list-item-border-width: 1px;
+// LIST-INPUT-ITEMS CLOSE-ICON
+$close-icon-border-right: 1px solid #AAA;
+$close-icon-color: #AAA;
+$close-icon-hover-background-color: #999;
+// OPTIONS-LIST
+$options-list-background-attachment: initial;
+$options-list-background-color: #FFF;
+$options-list-background-image: none;
+$options-list-background-position: initial;
+$options-list-background-repeat: initial;
+$options-list-z-index: 100;
+$options-list-margin: 0 0 0 0;
+$options-list-max-height: 100px;
+$options-list-padding: 0 0 0 0;
+// OPTIONS-LIST-LIST-ITEMS
+$list-item-background-hover-color: LightBlue;
+$list-item-padding: 10px 0 10px 10px;
+
+
+.gmail-select {
+  .options-list-container {
+    ul {
+      background-attachment: $options-list-background-attachment;
+      background-color: $options-list-background-color;
+      background-image: $options-list-background-image;
+      background-position: $options-list-background-position;
+      background-repeat: $options-list-background-repeat;
+      display: none;
+      margin: $options-list-margin;
+      max-height: $options-list-max-height;
+      overflow-y: scroll;
+      padding: $options-list-padding;
+      position: absolute;
+      z-index: $options-list-z-index;
+
+      &.active {
+        border-bottom: 1px solid #CCC;
+        border-bottom-left-radius: 4px;
+        border-bottom-right-radius: 4px;
+        border-left: 1px solid #CCC;
+        border-right: 1px solid #CCC;
+        border-top: none;
+        display: block;
+      }
+      li {
+        padding: $list-item-padding;
+
+        &.active, &:hover {
+          background-color: $list-item-background-hover-color;
+        }
+        .ajax-spinner {
+          text-align: center;
+
+          &:hover {
+            background-color: transparent;
+          }
+        }
+      }
+    }
+  }
+  .input-container, .options-list-container {
+    ul {
+      list-style: none;
+      padding-left: 0;
+    }
+  }
+  .input-container {
+    border-bottom-left-radius: $input-container-border-bottom-left-radius;
+    border-bottom-right-radius: $input-container-border-bottom-right-radius;
+    border-top-left-radius: $input-container-border-top-left-radius;
+    border-top-right-radius: $input-container-border-top-right-radius;
+    border-color: $input-container-border-color;
+    border-style: $input-container-border-style;
+    border-width: $input-container-border-width;
+
+    &.active {
+      border-bottom-left-radius: $input-container-active-border-bottom-left-radius;
+      border-bottom-right-radius: $input-container-active-border-bottom-right-radius;
+    }
+    input {
+      border: none;
+      outline: none;
+    }
+    ul {
+      margin: $input-container-list-margin;
+
+      li {
+        background-attachment: $input-list-item-background-attachment;
+        background-color: $input-list-item-background-color;
+        background-image: $input-list-item-background-image;
+        background-position: $input-list-item-background-position;
+        background-repeat: $input-list-item-background-repeat;
+        border-bottom-left-radius: $input-list-item-border-bottom-left-radius;
+        border-bottom-right-radius: $input-list-item-border-bottom-right-radius;
+        border-top-left-radius: $input-list-item-border-top-left-radius;
+        border-top-right-radius: $input-list-item-border-top-right-radius;
+        border-color: $input-list-item-border-color;
+        border-style: $input-list-item-border-style;
+        border-width: $input-list-item-border-width;
+        display: inline-block;
+        margin-right: 10px;
+        padding-right: 10px;
+
+        &:last-child {
+          border: none;
+          padding-right: 0px;
+        }
+        .close-icon {
+          border-right: $close-icon-border-right;
+          color: $close-icon-color;
+          display: inline-block;
+          height: 20px;
+          text-align: center;
+          text-decoration: none;
+          width: 20px;
+
+          &:hover {
+            background-color: $close-icon-hover-background-color;
+          }
+        }
+        span {
+          padding-left: 5px;
+        }
+      }
+    }
+  }
+}
