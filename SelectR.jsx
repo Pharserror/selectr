@@ -6,7 +6,7 @@ var SelectR = React.createClass({
     closeIconFactory: React.PropTypes.func,
     closeIconClass: React.PropTypes.string,
     defaultGroupKey: React.PropTypes.string,
-    groups: React.PropTypes.array,
+    groups: React.PropTypes.object,
     infiniteScrolling: React.PropTypes.bool,
     initialValue: React.PropTypes.array,
     inputWrapperClass: React.PropTypes.string,
@@ -133,14 +133,14 @@ var SelectR = React.createClass({
   },
   loadMoreOptions: function() {
     this.setState({
-      isAJAXing: true //,
-      //page:
+      isAJAXing: true,
+      page: (this.state.page + 1)
     }, function() {
-      this.props.async(this.appendFetchedOptions, this.state.page);
+      this.props.async(this.appendFetchedOptions, this.state.page, this.state.currentUserInput);
     });
   },
   onBlur: function(event) {
-    // TODO: store window bound keyDown and bind this keyDown
+    // TODO: store window.keyDown and bind this.keyDown
   },
   onWindowResize: function(event) {
     this.setState({
@@ -224,7 +224,9 @@ var SelectR = React.createClass({
     this.setState(newState);
   },
   onChange: function(event) {
-    this.filterOptions(event);
+    this.setState({
+      page: 1
+    }, this.filterOptions.bind(this, event));
     //if (!!this.props.onChange) {
     //  this.props.onChange();
     //}
@@ -297,7 +299,6 @@ var SelectR = React.createClass({
     return nodes;
   },
   removeSelectedOption: function(option) {
-    // TODO: Don't add back options that exist
     var selectedOptionsValues;
     var removedOptionIndex;
     newState = {
@@ -373,7 +374,7 @@ var SelectR = React.createClass({
         </li>
       );
     } else if (this.state.filteredOptions.length === 0) {
-      // TODO: If user has removed an option and AJAX'd again then display the
+      // TODO: (hybrid) If user has removed an option and AJAX'd again then display the
       // notice, but not all the time
       return (
         <li>
@@ -423,9 +424,11 @@ var SelectR = React.createClass({
         </li>
       );
     }, this);
-    for (group in groupedNodes) {
+    for (group in this.props.groups) {
       nodes.push(
-        <li>{group}</li>
+        <li className='list-item-option-group'>
+          {this.props.groups[group].label}
+        </li>
       );
       nodes = nodes.concat(groupedNodes[group]);
     }
@@ -469,24 +472,20 @@ var SelectR = React.createClass({
   selectOption: function(option) {
     var filteredOptionsValues;
     var selectedOptionIndex;
-    if (option.value === 'AJAX_LOAD') {
-      this.loadMoreOptions();
-    } else {
-      newState = {
-        currentlySelectedInputOption: this.state.selectedOptions.length,
-        filteredOptions: Array.from(this.state.filteredOptions),
-        selectedOptions: Array.from(this.state.selectedOptions)
-      };
-      filteredOptionsValues = newState.filteredOptions.map(function(option) {
-        return option.value;
-      });
-      selectedOptionIndex = filteredOptionsValues.indexOf(option.value);
-      newState.filteredOptions.splice(selectedOptionIndex, 1);
-      newState.selectedOptions = newState.selectedOptions.concat(option);
-      this.setState(newState, function() {
-        this.refs.input.getDOMNode().focus();
-      });
-    }
+    newState = {
+      currentlySelectedInputOption: this.state.selectedOptions.length,
+      filteredOptions: Array.from(this.state.filteredOptions),
+      selectedOptions: Array.from(this.state.selectedOptions)
+    };
+    filteredOptionsValues = newState.filteredOptions.map(function(option) {
+      return option.value;
+    });
+    selectedOptionIndex = filteredOptionsValues.indexOf(option.value);
+    newState.filteredOptions.splice(selectedOptionIndex, 1);
+    newState.selectedOptions = newState.selectedOptions.concat(option);
+    this.setState(newState, function() {
+      this.refs.input.getDOMNode().focus();
+    });
   },
   selectFromList: function(selection) {
     var selectedOption = this.state.currentlySelectedListOption;
