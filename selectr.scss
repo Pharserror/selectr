@@ -1,3 +1,7 @@
+// ROOT
+$root-z-index: 9999;
+// INPUT
+$input-width: 333px;
 // INPUT-CONTAINER
 $input-container-border-bottom-left-radius: 4px;
 $input-container-border-bottom-right-radius: 4px;
@@ -33,7 +37,7 @@ $options-list-background-color: #FFF;
 $options-list-background-image: none;
 $options-list-background-position: initial;
 $options-list-background-repeat: initial;
-$options-list-z-index: 100;
+$options-list-z-index: $root-z-index - 1;
 $options-list-margin: 0 0 0 0;
 $options-list-max-height: 100px;
 $options-list-padding: 0 0 0 0;
@@ -43,6 +47,16 @@ $list-item-padding: 10px 0 10px 10px;
 
 
 .gmail-select {
+  .invisible-screen {
+    display: none;
+
+    &.active {
+      background: transparent;
+      display: block;
+      position: absolute;
+      z-index: $root-z-index - 2;
+    }
+  }
   .options-list-container {
     ul {
       background-attachment: $options-list-background-attachment;
@@ -101,10 +115,13 @@ $list-item-padding: 10px 0 10px 10px;
     &.active {
       border-bottom-left-radius: $input-container-active-border-bottom-left-radius;
       border-bottom-right-radius: $input-container-active-border-bottom-right-radius;
+      position: relative;
+      z-index: $root-z-index;
     }
     input {
       border: none;
       outline: none;
+      width: $input-width;
     }
     ul {
       margin: $input-container-list-margin;

@@ -1,35 +1,51 @@
 BuyerApp.Components.GmailSelect = React.createClass({
   propTypes: {
+    AJAXSpinnerComponentFactory: React.PropTypes.func,
+    AJAXSpinnerComponentProps: React.PropTypes.object,
     async: React.PropTypes.func,
+    closeIconFactory: React.PropTypes.func,
+    closeIconClass: React.PropTypes.string,
+    infiniteScrolling: React.PropTypes.bool,
     initialValue: React.PropTypes.array,
+    inputWrapperClass: React.PropTypes.string,
+    manualAJAXPrompt: React.PropTypes.string,
     multiple: React.PropTypes.bool,
-    options: React.PropTypes.array,
+    noMoreOptionsNotice: React.PropTypes.string,
     onChange: React.PropTypes.func,
+    options: React.PropTypes.array,
+    optionsListItemClass: React.PropTypes.string,
+    pageSize: React.PropTypes.number,
+    placeholder: React.PropTypes.string,
+    rootParentId: React.PropTypes.string,
     selectElementClass: React.PropTypes.string,
     selectElementName: React.PropTypes.string,
-    placeholder: React.PropTypes.string,
+    selectOptionsListWrapperClass: React.PropTypes.string,
+    spinnerImgPath: React.PropTypes.string,
     wrapperClass: React.PropTypes.string
   },
   getDefaultProps: function() {
     return {
-      AJAXSpinnerComponentClass: undefined,
+      AJAXSpinnerComponentFactory: undefined,
+      AJAXSpinnerComponentProps: {},
       async: undefined,
-      closeIcon: 'x',
+      closeIconFactory: React.createFactory('em'),
       closeIconClass: '',
       infiniteScrolling: false,
       initialValue: [],
       inputWrapperClass: '',
-      manualAJAXPrompt: 'Load more optons...',
+      manualAJAXPrompt: 'Load more optons',
       multiple: false,
+      noMoreOptionsNotice: 'No more options available',
+      onChange: function() { this.onChange(); },
       options: [],
       optionsListItemClass: 'list-item',
-      onChange: function() { this.onChange(); },
       pageSize: 10,
+      placeholder: 'Please select from the dropdown or type to filter',
+      rootParentId: 'inner-content',
       selectElementClass: '', // 'hidden',
       selectElementName: '',
       selectOptionsListWrapperClass: '',
       spinnerImgPath: '/assets/select2-spinner.gif',
-      placeholder: 'Please select from the dropdown or type to filter',
       wrapperClass: ''
     };
   },
@@ -40,8 +56,8 @@ BuyerApp.Components.GmailSelect = React.createClass({
       currentlySelectedInputOption: -1,
       currentlySelectedListOption: 0,
       currentUserInput: "",
-      cursorPosition: -1, // If a user just hits backspace it will remove from the end of the array
       filteredOptions: [],
+      invisibleScreenClass: 'hidden',
       isAJAXing: false,
       isListHidden: true,
       isPendingOptionsUpdate: false,
@@ -61,6 +77,7 @@ BuyerApp.Components.GmailSelect = React.createClass({
       newState.filteredOptions = this.props.options;
       this.setState(newState);
     }
+    window.addEventListener('resize', this.onWindowResize);
   },
   appendFetchedOptions: function(options) {
     var availableOptionsValues = this.state.availableOptions.map(function(option) {
@@ -78,15 +95,18 @@ BuyerApp.Components.GmailSelect = React.createClass({
     });
   },
   getAJAXSpinnerComponent: function() {
-    if (!!this.props.AJAXSpinnerComponentClass) {
-      return (
-        <this.props.AJAXSpinnerComponentClass />
-      );
+    if (!!this.props.AJAXSpinnerComponentFactory) {
+      return this.props.AJAXSpinnerComponentFactory(this.props.AJAXSpinnerComponentProps);
     } else {
       return (
         <img src='/assets/select2-spinner.gif' />
       );
     }
+  },
+  hideOptionsList: function(event) {
+    this.setState({
+      isListHidden: true
+    });
   },
   loadMoreOptions: function() {
     this.setState({
@@ -111,24 +131,29 @@ BuyerApp.Components.GmailSelect = React.createClass({
     }
   },
   onBackspace: function(event) {
-    var selectedOption = this.state.selectedOptions[this.state.cursorPosition];
-    if (!!selectedOption) {
-      var newState = {
-        selectedOptions: Array.from(this.state.selectedOptions)
-      };
-      newState.selectedOptions.splice(this.state.cursorPosition, 1);
-      if (!!selectedOption.isNew) {
-        newState.currentUserInput = selectedOption.value.slice(0, -1);
+    if (!event.target.value || event.target.value === '') {
+      var selectedOption = this.state.selectedOptions[this.state.currentlySelectedInputOption];
+      if (!!selectedOption) {
+        var newState = {
+          currentlySelectedInputOption: this.state.currentlySelectedInputOption - 1
+        };
+        if (!!selectedOption.isNew) {
+          newState.currentUserInput = selectedOption.value;
+          this.refs.input.getDOMNode().value = newState.currentUserInput;
+        }
+        this.setState(
+          newState,
+          this.removeSelectedOption.bind(this, selectedOption)
+        );
       }
-      this.setState(newState);
     }
   },
   onEnterTab: function(event) {
+    event.preventDefault();
     this.refs.input.getDOMNode().value = '';
     if (!!this.state.filteredOptions[this.state.currentlySelectedListOption]) {
       this.selectOption(this.state.filteredOptions[this.state.currentlySelectedListOption]);
     } else {
-      debugger;
       var newOption = {
         isNew: true,
         label: this.state.currentUserInput,
@@ -136,23 +161,29 @@ BuyerApp.Components.GmailSelect = React.createClass({
       };
       var newState = {
         availableOptions: Array.from(this.state.availableOptions),
+        currentlySelectedInputOption: this.state.selectedOptions.length,
         currentUserInput: '',
         selectedOptions: Array.from(this.state.selectedOptions)
       };
       newState.availableOptions.push(newOption);
       newState.selectedOptions.push(newOption);
-      this.setState(newState, function() {
-        this.filterOptions(null, '');
-      });
+      this.setState(newState, this.filterOptions.bind(this, null, ''));
     }
   },
   filterOptions: function(event, filter) {
     var filterExp = !!event ? new RegExp(event.target.value) : new RegExp(filter);
+    var selectedOptionsValues = this.state.selectedOptions.map(function(option, index, options) {
+      return option.value;
+    });
     newState = {
       currentlySelectedListOption: 0,
       currentUserInput: !!event ? event.target.value : filter,
       filteredOptions: this.state.availableOptions.filter(function(option) {
-        return !!option.label.match(filterExp) && !option.isNew;
+        return (
+          !!option.label.match(filterExp) &&
+          !option.isNew &&
+          selectedOptionsValues.indexOf(option.value) === -1
+        );
       }),
       isAJAXing: false
     };
@@ -213,7 +244,7 @@ BuyerApp.Components.GmailSelect = React.createClass({
     var selectedOptionsValues;
     var removedOptionIndex;
     newState = {
-      availableOptions: Array.from(this.state.availableOptions),
+      canLoadMoreOptions: true,
       filteredOptions: Array.from(this.state.filteredOptions),
       selectedOptions: Array.from(this.state.selectedOptions)
     };
@@ -224,8 +255,46 @@ BuyerApp.Components.GmailSelect = React.createClass({
     newState.selectedOptions.splice(selectedOptionIndex, 1);
     if (!option.isNew) {
       newState.filteredOptions = newState.filteredOptions.concat(option);
+    } else {
+      newState.availableOptions = Array.from(this.state.availableOptions);
+      var availableOptionIndex;
+      var availableOptionsValues = newState.availableOptions.map(function(option) {
+        return option.value;
+      });
+      availableOptionIndex = availableOptionsValues.indexOf(option.value);
+      newState.availableOptions.splice(availableOptionIndex, 1);
     }
     this.setState(newState);
+  },
+  renderInvisibleScreenNode: function() {
+    var documentRect;
+    var invisibleScreenStyle = {};
+    var rootParentRect;
+    if (!this.state.isListHidden) {
+      documentRect = document.documentElement.getBoundingClientRect();
+      rootParentRect = document
+                       .getElementById(this.props.rootParentId)
+                       .getBoundingClientRect();
+      invisibleScreenStyle.height = documentRect.height + 'px';
+      invisibleScreenStyle.width = documentRect.width + 'px';
+      try {
+        invisibleScreenStyle.left = (0 - rootParentRect.left) + 'px';
+      } catch (e) {
+        invisibleScreenStyle.left = 0;
+      }
+      try {
+        invisibleScreenStyle.top = (0 - rootParentRect.top) + 'px';
+      } catch (e) {
+        invisibleScreenStyle.top = 0;
+      }
+    }
+    return (
+      <div
+        className={this.state.invisibleScreenClass + ' invisible-screen'}
+        onClick={this.hideOptionsList}
+        style={invisibleScreenStyle}
+      ></div>
+    );
   },
   renderLoadMoreOptionsOption: function() {
     if (!this.props.infiniteScrolling &&
@@ -243,6 +312,14 @@ BuyerApp.Components.GmailSelect = React.createClass({
       return (
         <li className='ajax-spinner'>
           {this.getAJAXSpinnerComponent()}
+        </li>
+      );
+    } else if (this.state.filteredOptions.length === 0) {
+      // TODO: If user has removed an option and AJAX'd again then display the
+      // notice, but not all the time
+      return (
+        <li>
+          {this.props.noMoreOptionsNotice}
         </li>
       );
     }
@@ -303,7 +380,7 @@ BuyerApp.Components.GmailSelect = React.createClass({
             href='javascript:void(0)'
             onClick={this.removeSelectedOption.bind(this, option)}
           >
-            {this.props.closeIcon}
+            {this.props.closeIconFactory({}, 'x')}
           </a>
           {option.label}
         </li>
@@ -312,7 +389,9 @@ BuyerApp.Components.GmailSelect = React.createClass({
     return nodes;
   },
   scrollActiveListItemIntoView: function() {
-    this.refs.optionsList.getDOMNode().scrollTop = this.refs.activeListItem.getDOMNode().offsetTop;
+    if (!!this.refs.activeListItem) {
+      this.refs.optionsList.getDOMNode().scrollTop = this.refs.activeListItem.getDOMNode().offsetTop;
+    }
   },
   selectOption: function(option) {
     var filteredOptionsValues;
@@ -321,8 +400,9 @@ BuyerApp.Components.GmailSelect = React.createClass({
       this.loadMoreOptions();
     } else {
       newState = {
-        filteredOptions: this.state.filteredOptions,
-        selectedOptions: this.state.selectedOptions
+        currentlySelectedInputOption: this.state.selectedOptions.length,
+        filteredOptions: Array.from(this.state.filteredOptions),
+        selectedOptions: Array.from(this.state.selectedOptions)
       };
       filteredOptionsValues = newState.filteredOptions.map(function(option) {
         return option.value;
@@ -343,7 +423,7 @@ BuyerApp.Components.GmailSelect = React.createClass({
           currentlySelectedListOption: (
             selectedOption === (this.state.filteredOptions.length - 1)
             ? selectedOption
-            : ++selectedOption
+            : (selectedOption + 1)
           )
         }, this.scrollActiveListItemIntoView);
         break;
@@ -352,7 +432,7 @@ BuyerApp.Components.GmailSelect = React.createClass({
           currentlySelectedListOption: (
             selectedOption === -1
             ? selectedOption
-            : --selectedOption
+            : (selectedOption - 1)
           )
         }, this.scrollActiveListItemIntoView);
         break;
@@ -360,6 +440,7 @@ BuyerApp.Components.GmailSelect = React.createClass({
   },
   toggleOptionsList: function(isHidden, event) {
     this.setState({
+      invisibleScreenClass: 'active',
       isListHidden: isHidden,
       optionsListWidth: this.refs.componentWrapper.getDOMNode().clientWidth + 'px'
     });
@@ -389,14 +470,18 @@ BuyerApp.Components.GmailSelect = React.createClass({
             <li>
               <input
                 onChange={this.onChange}
+                onBlur={this.onBlur}
                 onFocus={this.toggleOptionsList.bind(this, false)}
                 onKeyDown={this.onKeyDown}
+                placeholder={this.props.placeholder}
                 ref='input'
+                type='text'
               />
             </li>
           </ul>
         </div>
         {this.renderOptionsListContainer()}
+        {this.renderInvisibleScreenNode()}
       </div>
     );
   }
