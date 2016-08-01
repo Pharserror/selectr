@@ -1,4 +1,4 @@
-BuyerApp.Components.GmailSelect = React.createClass({
+var SelectR = React.createClass({
   propTypes: {
     async: React.PropTypes.func,
     initialValue: React.PropTypes.array,
