@@ -5,6 +5,8 @@ var SelectR = React.createClass({
     async: React.PropTypes.func,
     closeIconFactory: React.PropTypes.func,
     closeIconClass: React.PropTypes.string,
+    defaultGroupKey: React.PropTypes.string,
+    groups: React.PropTypes.array,
     infiniteScrolling: React.PropTypes.bool,
     initialValue: React.PropTypes.array,
     inputWrapperClass: React.PropTypes.string,
@@ -30,6 +32,8 @@ var SelectR = React.createClass({
       async: undefined,
       closeIconFactory: React.createFactory('em'),
       closeIconClass: '',
+      defaultGroupKey: 'default',
+      groups: { default: { label: '', nodes: [] } },
       infiniteScrolling: false,
       initialValue: [],
       inputWrapperClass: '',
@@ -51,7 +55,7 @@ var SelectR = React.createClass({
   },
   getInitialState: function() {
     return {
-      availableOptions: [],
+      availableOptions: { default: { label: '', nodes: [] } },
       canLoadMoreOptions: false,
       currentlySelectedInputOption: -1,
       currentlySelectedListOption: 0,
@@ -62,32 +66,51 @@ var SelectR = React.createClass({
       isListHidden: true,
       isPendingOptionsUpdate: false,
       optionsListWidth: '0px',
+      page: 1,
       selectedOptions: []
     };
   },
   componentDidMount: function() {
+    window.addEventListener('resize', this.onWindowResize);
     if (!!this.props.throttleFunc && this.props.isSearchThrottled) {
       this.filterOptions = this.props.throttleFunc(this.filterOptions);
     }
-    if (!!this.props.async) {
-      this.loadMoreOptions();
-    } else {
-      var newState = {};
-      newState.availableOptions = this.props.options;
-      newState.filteredOptions = this.props.options;
-      this.setState(newState);
+    var newState = {};
+    if (!!this.props.initialValue) {
+      newState.selectedOptions = Array.from(this.props.initialValue);
     }
-    window.addEventListener('resize', this.onWindowResize);
+    if (!!this.props.options) {
+      this.appendFetchedOptions(this.props.options);
+    }
+    this.setState(newState, function() {
+      if (!!this.props.async) {
+        this.loadMoreOptions();
+      }
+    });
   },
   appendFetchedOptions: function(options) {
-    var availableOptionsValues = this.state.availableOptions.map(function(option) {
-      return option.value;
-    });
-    var newState = { availableOptions: this.state.availableOptions };
+    var availableOptionsValues = [];
+    var newState = { availableOptions: new Object(this.state.availableOptions) };
+    for (group in this.props.groups) {
+      if (!newState.availableOptions[group]) {
+        newState.availableOptions[group] = {
+          label: this.props.groups[group].label,
+          nodes: []
+        };
+      }
+      newState.availableOptions[group].nodes.map(function(option) {
+        return availableOptionsValues.push(option.value);
+      });
+    }
     options = options.filter(function(option) {
       return availableOptionsValues.indexOf(option.value) === -1;
     });
-    newState.availableOptions = newState.availableOptions.concat(options);
+    options.forEach(function(option) {
+      var optionGroup = option.group || this.props.defaultGroupKey;
+      if (!!newState.availableOptions[optionGroup]) {
+        newState.availableOptions[optionGroup].nodes.push(option);
+      }
+    }, this);
     newState.canLoadMoreOptions = options.length === this.props.pageSize;
     newState.isAJAXing = false;
     this.setState(newState, function() {
@@ -110,10 +133,14 @@ var SelectR = React.createClass({
   },
   loadMoreOptions: function() {
     this.setState({
-      isAJAXing: true
+      isAJAXing: true //,
+      //page:
     }, function() {
-      this.props.async(this.appendFetchedOptions);
+      this.props.async(this.appendFetchedOptions, this.state.page);
     });
+  },
+  onBlur: function(event) {
+    // TODO: store window bound keyDown and bind this keyDown
   },
   onWindowResize: function(event) {
     this.setState({
@@ -157,15 +184,16 @@ var SelectR = React.createClass({
       var newOption = {
         isNew: true,
         label: this.state.currentUserInput,
-        value: this.state.currentUserInput
+        value: this.state.currentUserInput,
+        group: this.props.defaultGroupKey
       };
       var newState = {
-        availableOptions: Array.from(this.state.availableOptions),
+        availableOptions: new Object(this.state.availableOptions),
         currentlySelectedInputOption: this.state.selectedOptions.length,
         currentUserInput: '',
         selectedOptions: Array.from(this.state.selectedOptions)
       };
-      newState.availableOptions.push(newOption);
+      newState.availableOptions[this.props.defaultGroupKey].nodes.push(newOption);
       newState.selectedOptions.push(newOption);
       this.setState(newState, this.filterOptions.bind(this, null, ''));
     }
@@ -175,10 +203,16 @@ var SelectR = React.createClass({
     var selectedOptionsValues = this.state.selectedOptions.map(function(option, index, options) {
       return option.value;
     });
+    var availableOptions = [];
+    for (group in this.props.groups) {
+      this.state.availableOptions[group].nodes.forEach(function(option) {
+        availableOptions.push(option);
+      });
+    }
     newState = {
       currentlySelectedListOption: 0,
       currentUserInput: !!event ? event.target.value : filter,
-      filteredOptions: this.state.availableOptions.filter(function(option) {
+      filteredOptions: availableOptions.filter(function(option) {
         return (
           !!option.label.match(filterExp) &&
           !option.isNew &&
@@ -218,25 +252,48 @@ var SelectR = React.createClass({
         break;
     }
   },
-  populateSelectWithOptions: function() {
+  populateSelectGroups: function() {
+    var nodes = [];
+    if (!!this.props.groups) {
+      var groups = new Object(this.props.groups);
+    } else {
+      var groups = {};
+      groups[this.props.defaultGroupKey] = {
+        label: '',
+        nodes: Array.from(this.state.availableOptions)
+      };
+    }
+    for (group in groups) {
+      nodes.push(
+        <optgroup label={groups[group].label}>
+          {this.populateSelectGroupWithOptions(group)}
+        </optgroup>
+      );
+    }
+    return nodes;
+  },
+  populateSelectGroupWithOptions: function(groupKey) {
+    var availableOptionsGroup = this.state.availableOptions[groupKey];
     var nodes = [];
     var selectedOptionsValues = [];
-    if (!!this.state.availableOptions[0] && !!this.state.selectedOptions[0]) {
-      selectedOptionsValues = this.state.selectedOptions.map(function(option) {
-        return option.value;
+    if (!!availableOptionsGroup) {
+      if (!!this.state.selectedOptions[0]) {
+        selectedOptionsValues = this.state.selectedOptions.map(function(option) {
+          return option.value;
+        });
+      }
+      availableOptionsGroup.nodes.forEach(function(option, index, options) {
+        nodes.push(
+          <option
+            key={option.label + '-' + index}
+            selected={selectedOptionsValues.indexOf(option.value) > -1}
+            value={option.value}
+          >
+            {option.label}
+          </option>
+        );
       });
     }
-    this.state.availableOptions.forEach(function(option, index, options) {
-      nodes.push(
-        <option
-          key={option.label + '-' + index}
-          selected={selectedOptionsValues.indexOf(option.value) > -1}
-          value={option.value}
-        >
-          {option.label}
-        </option>
-      );
-    });
     return nodes;
   },
   removeSelectedOption: function(option) {
@@ -256,13 +313,14 @@ var SelectR = React.createClass({
     if (!option.isNew) {
       newState.filteredOptions = newState.filteredOptions.concat(option);
     } else {
-      newState.availableOptions = Array.from(this.state.availableOptions);
+      newState.availableOptions = new Object(this.state.availableOptions);
       var availableOptionIndex;
-      var availableOptionsValues = newState.availableOptions.map(function(option) {
+      var optionGroup = option.group || this.props.defaultGroupKey;
+      var availableOptionsValues = newState.availableOptions[optionGroup].nodes.map(function(option) {
         return option.value;
       });
       availableOptionIndex = availableOptionsValues.indexOf(option.value);
-      newState.availableOptions.splice(availableOptionIndex, 1);
+      newState.availableOptions[optionGroup].nodes.splice(availableOptionIndex, 1);
     }
     this.setState(newState);
   },
@@ -339,10 +397,19 @@ var SelectR = React.createClass({
     );
   },
   renderOptionsForList: function() {
+    var i = 1;
+    var groupedNodes = {};
     var nodes = [];
+    for (group in this.props.groups) {
+      groupedNodes[group] = [];
+    }
     this.state.filteredOptions.forEach(function(option, index, options) {
       var isActive = this.state.currentlySelectedListOption === index;
-      nodes.push(
+      var optionGroup = option.group || this.props.defaultGroupKey;
+      if (!groupedNodes[optionGroup]) {
+        throw new Error("renderOptionsForList: data mismatch! An option has a group not passed to this.props.groups!");
+      }
+      groupedNodes[optionGroup].push(
         <li
           className={
             this.props.optionsListItemClass +
@@ -356,6 +423,12 @@ var SelectR = React.createClass({
         </li>
       );
     }, this);
+    for (group in groupedNodes) {
+      nodes.push(
+        <li>{group}</li>
+      );
+      nodes = nodes.concat(groupedNodes[group]);
+    }
     return nodes;
   },
   renderOptionsListContainer: function() {
@@ -456,7 +529,7 @@ var SelectR = React.createClass({
           multiple={!!this.props.multiple}
           name={this.props.selectElementName}
         >
-          {this.populateSelectWithOptions()}
+          {this.populateSelectGroups()}
         </select>
         <div
           className={
