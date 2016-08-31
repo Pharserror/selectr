@@ -39,11 +39,14 @@ $options-list-background-position: initial;
 $options-list-background-repeat: initial;
 $options-list-z-index: $root-z-index - 1;
 $options-list-margin: 0 0 0 0;
-$options-list-max-height: 100px;
+$options-list-max-height: 300px;
 $options-list-padding: 0 0 0 0;
 // OPTIONS-LIST-LIST-ITEMS
 $list-item-background-hover-color: LightBlue;
 $list-item-padding: 10px 0 10px 10px;
+// AJAX-SPINNER
+$ajax-spinner-height: 20px;
+$ajax-spinner-width: 20px;
 
 
 .gmail-select {
@@ -87,12 +90,17 @@ $list-item-padding: 10px 0 10px 10px;
         &.active, &:hover {
           background-color: $list-item-background-hover-color;
         }
-        .ajax-spinner {
-          text-align: center;
+        &.ajax-spinner-list-item, &.list-item-option-group, &.no-more-options-list-item {
+          text-align: left;
 
           &:hover {
             background-color: transparent;
           }
+        }
+        .ajax-spinner {
+          height: $ajax-spinner-height;
+          width: $ajax-spinner-width;
+
         }
       }
     }
@@ -145,6 +153,7 @@ $list-item-padding: 10px 0 10px 10px;
         padding-right: 10px;
 
         &:last-child {
+          background-color: transparent;
           border: none;
           padding-right: 0px;
         }
@@ -168,3 +177,4 @@ $list-item-padding: 10px 0 10px 10px;
     }
   }
 }
+.hidden { display: none; }

@@ -1,18 +1,27 @@
+var React = require('react');
+
+
 var SelectR = React.createClass({
   propTypes: {
+    AJAXSpinnerClasses: React.PropTypes.string,
     AJAXSpinnerComponentFactory: React.PropTypes.func,
     AJAXSpinnerComponentProps: React.PropTypes.object,
+    AJAXSpinnerListItemClasses: React.PropTypes.string,
     async: React.PropTypes.func,
     closeIconFactory: React.PropTypes.func,
     closeIconClass: React.PropTypes.string,
+    debounceFunc: React.PropTypes.func,
+    debounceTimeout: React.PropTypes.number,
     defaultGroupKey: React.PropTypes.string,
     groups: React.PropTypes.object,
     infiniteScrolling: React.PropTypes.bool,
     initialValue: React.PropTypes.array,
     inputWrapperClass: React.PropTypes.string,
+    isSubmitAsync: React.PropTypes.bool,
     manualAJAXPrompt: React.PropTypes.string,
     multiple: React.PropTypes.bool,
     noMoreOptionsNotice: React.PropTypes.string,
+    noMoreOptionsListItemClasses: React.PropTypes.string,
     onChange: React.PropTypes.func,
     options: React.PropTypes.array,
     optionsListItemClass: React.PropTypes.string,
@@ -21,25 +30,37 @@ var SelectR = React.createClass({
     rootParentId: React.PropTypes.string,
     selectElementClass: React.PropTypes.string,
     selectElementName: React.PropTypes.string,
+    selectionFormatter: React.PropTypes.func,
     selectOptionsListWrapperClass: React.PropTypes.string,
+    shouldLogErrors: React.PropTypes.bool,
     spinnerImgPath: React.PropTypes.string,
+    submitMethod: React.PropTypes.string,
+    submitPassword: React.PropTypes.string,
+    submitSelection: React.PropTypes.func,
+    submitUrl: React.PropTypes.string,
+    submitUser: React.PropTypes.string,
     wrapperClass: React.PropTypes.string
   },
   getDefaultProps: function() {
     return {
+      AJAXSpinnerClasses: 'ajax-spinner',
       AJAXSpinnerComponentFactory: undefined,
       AJAXSpinnerComponentProps: {},
+      AJAXSpinnerListItemClasses: '',
       async: undefined,
       closeIconFactory: React.createFactory('em'),
       closeIconClass: '',
+      debounceTimeout: 500,
       defaultGroupKey: 'default',
       groups: { default: { label: '', nodes: [] } },
       infiniteScrolling: false,
       initialValue: [],
       inputWrapperClass: '',
+      isSubmitAsync: true,
       manualAJAXPrompt: 'Load more optons',
       multiple: false,
       noMoreOptionsNotice: 'No more options available',
+      noMoreOptionsListItemClasses: '',
       onChange: function() { this.onChange(); },
       options: [],
       optionsListItemClass: 'list-item',
@@ -48,8 +69,15 @@ var SelectR = React.createClass({
       rootParentId: 'inner-content',
       selectElementClass: 'hidden',
       selectElementName: '',
+      selectionFormatter: this.selectionFormatter,
       selectOptionsListWrapperClass: '',
-      spinnerImgPath: '/assets/select2-spinner.gif',
+      shouldLogErrors: false,
+      spinnerImgPath: '/images/loader.gif',
+      submitMethod: 'POST',
+      submitPassword: undefined,
+      submitSelection: this.submitSelection,
+      submitUrl: 'http://localhost:3000',
+      submitUser: undefined,
       wrapperClass: ''
     };
   },
@@ -71,11 +99,15 @@ var SelectR = React.createClass({
     };
   },
   componentDidMount: function() {
+    var newState = {};
+    // We want to debounce the window resize, allowing users to pass in a debounce
+    // function in-case they have a 3rd party library they would rather use
+    this.debounceFunc = this.props.debounceFunc || this.debounceFunc;
+    this.onWindowResize = this.debounceFunc(this.onWindowResize);
     window.addEventListener('resize', this.onWindowResize);
     if (!!this.props.throttleFunc && this.props.isSearchThrottled) {
       this.filterOptions = this.props.throttleFunc(this.filterOptions);
     }
-    var newState = {};
     if (!!this.props.initialValue) {
       newState.selectedOptions = Array.from(this.props.initialValue);
     }
@@ -83,25 +115,45 @@ var SelectR = React.createClass({
       this.appendFetchedOptions(this.props.options);
     }
     this.setState(newState, function() {
-      if (!!this.props.async) {
+      if (!!this.props.async && this.props.options.length === 0) {
         this.loadMoreOptions();
       }
     });
   },
+  shouldComponentUpdate: function(nextProps, nextState) {
+    /*if ((nextState.availableOptions.length > this.state.availableOptions.length) ||
+        (nextProps.options.length > this.props.length)) {*/
+    return true;
+    /*} else {
+      return false;
+    }*/
+  },
   appendFetchedOptions: function(options) {
     var availableOptionsValues = [];
+    var callback =
+      options.callback ||
+      !!this.props.async
+      ? this.setState.bind(
+        this,
+        { page: this.state.page + 1 }
+      ) : (function() { return; });
+    // We want to append any options to what we already have
     var newState = { availableOptions: new Object(this.state.availableOptions) };
-    for (group in this.props.groups) {
+    for (var group in this.props.groups) {
+      // If the group doesn't exist we initialize it
       if (!newState.availableOptions[group]) {
         newState.availableOptions[group] = {
-          label: this.props.groups[group].label,
+          label: this.props.groups[group].label || this.props.defaultGroupKey,
           nodes: []
         };
       }
+      // Otherwise we add what we have to the list of available options
       newState.availableOptions[group].nodes.map(function(option) {
         return availableOptionsValues.push(option.value);
       });
     }
+    // We discard whatever we've received that is already in the list of available
+    // options so that we don't display the same thing twice
     options = options.filter(function(option) {
       return availableOptionsValues.indexOf(option.value) === -1;
     });
@@ -117,13 +169,43 @@ var SelectR = React.createClass({
       this.filterOptions(null, this.state.currentUserInput);
     });
   },
+  computeOptionsListWidth: function() {
+    // We need to account for any border on the options list
+    var optionsListStyle = window.getComputedStyle(this.refs.optionsList);
+    return (
+      (this.refs.componentWrapper.clientWidth
+      - parseInt(optionsListStyle.borderLeftWidth)
+      - parseInt(optionsListStyle.borderRightWidth))
+      + 'px'
+    );
+  },
+  debounceFunc: function(func, time) {
+    time = time || this.props.debounceTimeout;
+    var timeout;
+    return function() {
+      clearTimeout(timeout);
+      timeout = setTimeout(func, time);
+    }
+  },
   getAJAXSpinnerComponent: function() {
+    // The user can pass in their own React factory for something like React-Loader
+    // if they don't want to use the packaged static image
     if (!!this.props.AJAXSpinnerComponentFactory) {
       return this.props.AJAXSpinnerComponentFactory(this.props.AJAXSpinnerComponentProps);
     } else {
       return (
-        <img src='/assets/select2-spinner.gif' />
+        <img
+          src={this.props.spinnerImgPath}
+          className={this.props.AJAXSpinnerClasses}
+        />
       );
+    }
+  },
+  dispatcher: function(chain) {
+    var toExecute = chain.pop();
+    if (!!toExecute) {
+      toExecute();
+      this.dispatcher.call(this.dispatcher(chain), func);
     }
   },
   hideOptionsList: function(event) {
@@ -132,27 +214,41 @@ var SelectR = React.createClass({
     });
   },
   loadMoreOptions: function() {
-    this.setState({
-      isAJAXing: true,
-      page: (this.state.page + 1)
-    }, function() {
-      this.props.async(this.appendFetchedOptions, this.state.page, this.state.currentUserInput);
-    });
+    if (!this.state.isAJAXing) {
+      this.setState({
+        isAJAXing: true,
+        page: this.state.page
+      }, function() {
+        this.props.async(
+          this.appendFetchedOptions,
+          this.state.page,
+          this.state.currentUserInput
+        );
+        // The spinner should be showing now so we want the user to see it
+        this.refs.AJAXSpinner.scrollIntoView();
+      });
+    }
   },
   onBlur: function(event) {
     // TODO: store window.keyDown and bind this.keyDown
   },
   onWindowResize: function(event) {
     this.setState({
-      optionsListWidth: this.refs.componentWrapper.getDOMNode().clientWidth + 'px'
+      optionsListWidth: this.computeOptionsListWidth()
     });
   },
+  handleSubmitResponse: function() {
+    var response = this.responseText;
+    this.setState({ messages: 'success' });
+  },
   isBottomOfListVisible: function() {
-    var optionsList = this.refs.optionsList.getDOMNode();
+    var optionsList = this.refs.optionsList;
+    // Should be equal to $options-list-max-height
     var optionsListHeight = optionsList.clientHeight;
-    var optionsListScrollY = optionsList.scrollTop;
-    var isVisible = (optionsListHeight >= 0) &&
-                    (optionsListHeight <= optionsListScrollY);
+    var isVisible = (optionsListHeight > 0) &&
+                    ((optionsList.scrollHeight
+                    - optionsList.clientHeight)
+                    === optionsList.scrollTop);
     if (isVisible) {
       this.loadMoreOptions();
     }
@@ -166,7 +262,7 @@ var SelectR = React.createClass({
         };
         if (!!selectedOption.isNew) {
           newState.currentUserInput = selectedOption.value;
-          this.refs.input.getDOMNode().value = newState.currentUserInput;
+          this.refs.input.value = newState.currentUserInput;
         }
         this.setState(
           newState,
@@ -177,7 +273,7 @@ var SelectR = React.createClass({
   },
   onEnterTab: function(event) {
     event.preventDefault();
-    this.refs.input.getDOMNode().value = '';
+    this.refs.input.value = '';
     if (!!this.state.filteredOptions[this.state.currentlySelectedListOption]) {
       this.selectOption(this.state.filteredOptions[this.state.currentlySelectedListOption]);
     } else {
@@ -204,12 +300,12 @@ var SelectR = React.createClass({
       return option.value;
     });
     var availableOptions = [];
-    for (group in this.props.groups) {
+    for (var group in this.props.groups) {
       this.state.availableOptions[group].nodes.forEach(function(option) {
         availableOptions.push(option);
       });
     }
-    newState = {
+    var newState = {
       currentlySelectedListOption: 0,
       currentUserInput: !!event ? event.target.value : filter,
       filteredOptions: availableOptions.filter(function(option) {
@@ -254,6 +350,10 @@ var SelectR = React.createClass({
         break;
     }
   },
+  onSubmit: function(event) {
+    var results = selectionFormatter(event);
+    this.props.submitSelection(results);
+  },
   populateSelectGroups: function() {
     var nodes = [];
     if (!!this.props.groups) {
@@ -265,9 +365,12 @@ var SelectR = React.createClass({
         nodes: Array.from(this.state.availableOptions)
       };
     }
-    for (group in groups) {
+    for (var group in groups) {
       nodes.push(
-        <optgroup label={groups[group].label}>
+        <optgroup
+          key={groups[group].label.toLowerCase().split(' ').join('-')}
+          label={groups[group].label}
+        >
           {this.populateSelectGroupWithOptions(group)}
         </optgroup>
       );
@@ -287,7 +390,7 @@ var SelectR = React.createClass({
       availableOptionsGroup.nodes.forEach(function(option, index, options) {
         nodes.push(
           <option
-            key={option.label + '-' + index}
+            key={option.label.toLowerCase().split(' ').join('-') + '-' + index}
             selected={selectedOptionsValues.indexOf(option.value) > -1}
             value={option.value}
           >
@@ -299,9 +402,10 @@ var SelectR = React.createClass({
     return nodes;
   },
   removeSelectedOption: function(option) {
+    var selectedOptionIndex;
     var selectedOptionsValues;
     var removedOptionIndex;
-    newState = {
+    var newState = {
       canLoadMoreOptions: true,
       filteredOptions: Array.from(this.state.filteredOptions),
       selectedOptions: Array.from(this.state.selectedOptions)
@@ -313,14 +417,23 @@ var SelectR = React.createClass({
     newState.selectedOptions.splice(selectedOptionIndex, 1);
     if (!option.isNew) {
       newState.filteredOptions = newState.filteredOptions.concat(option);
+      // If this is a pre-existing option we want it to go back into the right place
+      newState.filteredOptions = newState.filteredOptions.sort(function(a, b) {
+        if (a.label < b.label) return -1;
+        if (a.label > b.label) return 1;
+        return 0;
+      });
     } else {
       newState.availableOptions = new Object(this.state.availableOptions);
       var availableOptionIndex;
       var optionGroup = option.group || this.props.defaultGroupKey;
-      var availableOptionsValues = newState.availableOptions[optionGroup].nodes.map(function(option) {
-        return option.value;
-      });
+      var availableOptionsValues =
+        newState
+        .availableOptions[optionGroup]
+        .nodes
+        .map(function(option) { return option.value; });
       availableOptionIndex = availableOptionsValues.indexOf(option.value);
+      // New options get deleted
       newState.availableOptions[optionGroup].nodes.splice(availableOptionIndex, 1);
     }
     this.setState(newState);
@@ -369,7 +482,10 @@ var SelectR = React.createClass({
       );
     } else if (this.state.isAJAXing) {
       return (
-        <li className='ajax-spinner'>
+        <li
+          className={'ajax-spinner-list-item ' + this.props.AJAXSpinnerListItemClasses}
+          ref='AJAXSpinner'
+        >
           {this.getAJAXSpinnerComponent()}
         </li>
       );
@@ -377,7 +493,7 @@ var SelectR = React.createClass({
       // TODO: (hybrid) If user has removed an option and AJAX'd again then display the
       // notice, but not all the time
       return (
-        <li>
+        <li className={'no-more-options-list-item' + this.props.noMoreOptionsListItemClasses}>
           {this.props.noMoreOptionsNotice}
         </li>
       );
@@ -386,9 +502,7 @@ var SelectR = React.createClass({
   renderOptionsList: function() {
     return (
       <ul
-        className={
-          this.state.isListHidden ? 'hidden' : 'active'
-        }
+        className={this.state.isListHidden ? 'hidden' : 'active'}
         style={{ width: this.state.optionsListWidth }}
         ref='optionsList'
       >
@@ -401,7 +515,7 @@ var SelectR = React.createClass({
     var i = 1;
     var groupedNodes = {};
     var nodes = [];
-    for (group in this.props.groups) {
+    for (var group in this.props.groups) {
       groupedNodes[group] = [];
     }
     this.state.filteredOptions.forEach(function(option, index, options) {
@@ -416,7 +530,7 @@ var SelectR = React.createClass({
             this.props.optionsListItemClass +
             (isActive ? ' active': '')
           }
-          key={option.label + '-' + index}
+          key={option.label.toLowerCase().split(' ').join('-') + '-' + index}
           onClick={this.selectOption.bind(this, option)}
           ref={isActive ? 'activeListItem': ''}
         >
@@ -424,9 +538,12 @@ var SelectR = React.createClass({
         </li>
       );
     }, this);
-    for (group in this.props.groups) {
+    for (var group in this.props.groups) {
       nodes.push(
-        <li className='list-item-option-group'>
+        <li
+          className='list-item-option-group'
+          key={this.props.groups[group].label.toLowerCase().split(' ').join('-')}
+        >
           {this.props.groups[group].label}
         </li>
       );
@@ -440,7 +557,7 @@ var SelectR = React.createClass({
                  ' options-list-container'
     };
     if (this.props.infiniteScrolling) {
-      props.onScroll = this.isBottomOfListVisible;
+      props.onScroll = this.debounceFunc(this.isBottomOfListVisible);
     }
     return (
       React.createElement('div', props, this.renderOptionsList())
@@ -454,6 +571,7 @@ var SelectR = React.createClass({
           <a
             className={this.props.closeIconClass + ' close-icon'}
             href='javascript:void(0)'
+            key={option.label.toLowerCase().split(' ').join('-')}
             onClick={this.removeSelectedOption.bind(this, option)}
           >
             {this.props.closeIconFactory({}, 'x')}
@@ -466,25 +584,19 @@ var SelectR = React.createClass({
   },
   scrollActiveListItemIntoView: function() {
     if (!!this.refs.activeListItem) {
-      this.refs.optionsList.getDOMNode().scrollTop = this.refs.activeListItem.getDOMNode().offsetTop;
+      this.refs.optionsList.scrollTop = this.refs.activeListItem.offsetTop;
     }
   },
   selectOption: function(option) {
-    var filteredOptionsValues;
-    var selectedOptionIndex;
-    newState = {
+    var newState = {
       currentlySelectedInputOption: this.state.selectedOptions.length,
-      filteredOptions: Array.from(this.state.filteredOptions),
+      currentUserInput: '',
       selectedOptions: Array.from(this.state.selectedOptions)
     };
-    filteredOptionsValues = newState.filteredOptions.map(function(option) {
-      return option.value;
-    });
-    selectedOptionIndex = filteredOptionsValues.indexOf(option.value);
-    newState.filteredOptions.splice(selectedOptionIndex, 1);
     newState.selectedOptions = newState.selectedOptions.concat(option);
     this.setState(newState, function() {
-      this.refs.input.getDOMNode().focus();
+      this.refs.input.focus();
+      this.filterOptions(undefined, this.state.currentUserInput);
     });
   },
   selectFromList: function(selection) {
@@ -510,11 +622,46 @@ var SelectR = React.createClass({
         break;
     }
   },
+  selectionFormatter: function(event) {
+    var selectedOptions = [];
+    try {
+      event.target.value.split(',').reduce(function(items, item, index, values) {
+        this.state.options.forEach(function(option) {
+          if (option.id === item) {
+            items.push(option);
+          }
+        });
+        return items;
+      }, []);
+    } catch (e) {
+      if (!!this.props.shouldLogErrors) {
+        console.log(e);
+      }
+    }
+    return selectedOptions;
+  },
+  submitSelection: function(selection) {
+    var request = new XMLHttpRequest();
+    request.addEventListener('load', this.props.handleSubmitReponse);
+    request.open(
+      this.props.submitMethod,
+      this.props.submitUrl,
+      this.props.isSubmitAsync,
+      this.props.submitUser,
+      this.props.submitPassword
+    );
+    request.send(selection);
+  },
   toggleOptionsList: function(isHidden, event) {
     this.setState({
       invisibleScreenClass: 'active',
-      isListHidden: isHidden,
-      optionsListWidth: this.refs.componentWrapper.getDOMNode().clientWidth + 'px'
+      isListHidden: isHidden
+    }, function() {
+      if (!this.state.isListHidden) {
+        this.setState({
+          optionsListWidth: this.computeOptionsListWidth()
+        });
+      }
     });
   },
   render: function() {
@@ -558,3 +705,5 @@ var SelectR = React.createClass({
     );
   }
 });
+
+module.exports = SelectR;
