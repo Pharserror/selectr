@@ -4,6 +4,7 @@ var React = require('react');
 var ReactDOM = require('react-dom');
 var SelectR = require('./SelectR.jsx');
 
+
 function generateRandomOptions(callback, page, currentUserInput) {
   var options = [];
   var max = 999;
@@ -24,6 +25,7 @@ function generateRandomOptions(callback, page, currentUserInput) {
   }
 }
 $(document).on('ready', function() {
+  var options = generateRandomOptions();
   ReactDOM.render(
     React.createElement(
       SelectR,
@@ -31,8 +33,9 @@ $(document).on('ready', function() {
         async: generateRandomOptions,
         groups: { default: { label: 'TEST', nodes: [] } },
         infiniteScrolling: true,
-        options: generateRandomOptions(),
-        rootParentId: 'root'
+        options: options,
+        rootParentId: 'root',
+        initialValue: [options[0]]
       }
     ),
     document.getElementById('root')

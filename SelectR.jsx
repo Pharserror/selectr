@@ -66,7 +66,7 @@ var SelectR = React.createClass({
       optionsListItemClass: 'list-item',
       pageSize: 10,
       placeholder: 'Please select from the dropdown or type to filter',
-      rootParentId: 'inner-content',
+      rootParentId: 'root',
       selectElementClass: 'hidden',
       selectElementName: '',
       selectionFormatter: this.selectionFormatter,
@@ -444,9 +444,11 @@ var SelectR = React.createClass({
     var rootParentRect;
     if (!this.state.isListHidden) {
       documentRect = document.documentElement.getBoundingClientRect();
-      rootParentRect = document
-                       .getElementById(this.props.rootParentId)
-                       .getBoundingClientRect();
+      try {
+        rootParentRect = document
+                         .getElementById(this.props.rootParentId)
+                         .getBoundingClientRect();
+      } catch (e) {}
       invisibleScreenStyle.height = documentRect.height + 'px';
       invisibleScreenStyle.width = documentRect.width + 'px';
       try {
@@ -674,6 +676,7 @@ var SelectR = React.createClass({
           className={this.props.selectElementClass}
           multiple={!!this.props.multiple}
           name={this.props.selectElementName}
+          ref='selectElement'
         >
           {this.populateSelectGroups()}
         </select>
@@ -684,7 +687,7 @@ var SelectR = React.createClass({
             ' input-container'
           }
         >
-          <ul>
+          <ul ref='selectedOptionsList'>
             {this.renderSelectedOptionTags()}
             <li>
               <input
