@@ -590,12 +590,16 @@ var SelectR = React.createClass({
     }
   },
   selectOption: function(option) {
-    var newState = {
-      currentlySelectedInputOption: this.state.selectedOptions.length,
-      currentUserInput: '',
-      selectedOptions: Array.from(this.state.selectedOptions)
-    };
-    newState.selectedOptions = newState.selectedOptions.concat(option);
+    var newState = { currentUserInput: '' };
+    if (this.props.multiple) {
+      newState.selectedOptions = Array.from(this.state.selectedOptions);
+      newState.selectedOptions = newState.selectedOptions.concat(option);
+      newState.currentlySelectedInputOption = this.state.selectedOptions.length;
+    } else if (!!this.state.selectedOptions[0]) {
+      this.removeSelectedOption(this.state.selectedOptions[0]);
+      newState.selectedOptions = [option];
+      newState.currentlySelectedInputOption = 0;
+    }
     this.setState(newState, function() {
       this.refs.input.focus();
       this.filterOptions(undefined, this.state.currentUserInput);

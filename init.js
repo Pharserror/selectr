@@ -35,7 +35,8 @@ $(document).on('ready', function() {
         infiniteScrolling: true,
         options: options,
         rootParentId: 'root',
-        initialValue: [options[0]]
+        initialValue: [options[0]],
+        multiple: false
       }
     ),
     document.getElementById('root')

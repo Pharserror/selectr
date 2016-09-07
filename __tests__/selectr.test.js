@@ -1,7 +1,6 @@
 // Tests for the options index component
 'use strict';
 
-//jest.unmock('../SelectR.jsx');
 
 import React              from 'react';
 import ReactDOM           from 'react-dom';
@@ -48,22 +47,6 @@ describe('SelectR', () => {
     TestUtils.Simulate.focus(inputNode);
     expect(selectrComponent.state.isListHidden).toEqual(false);
   });
-  it('has options you can pick', () => {
-    let SelectR = require('../SelectR.jsx');
-    let selectrComponent = TestUtils.renderIntoDocument(
-      <SelectR
-        options={[{
-          group: 'default',
-          label: 'test',
-          value: 'test'
-        }]}
-      />
-    );
-    let inputNode = ReactDOM.findDOMNode(selectrComponent.refs.input);
-    TestUtils.Simulate.focus(inputNode);
-    TestUtils.Simulate.click(selectrComponent.refs.optionsList.childNodes[0]);
-    expect(selectrComponent.refs.selectElement.value).toEqual('test');
-  });
   it('has options you can unselect', () => {
     let options = [{
       group: 'default',
@@ -80,9 +63,59 @@ describe('SelectR', () => {
     TestUtils
     .Simulate
     .click(selectrComponent.refs.selectedOptionsList.children[0].children[0]);
-    // Wait 1 second for the state to be set
+    // Wait a little bit for the state to be set
     setTimeout(() => {
       expect(selectrComponent.refs.selectElement.value).toEqual('')
-    }, 1000);
+    }, 100);
+  });
+  it('can select multiple options', () => {
+    let options = [{
+      group: 'default',
+      label: 'test',
+      value: 'test'
+    }, {
+      group: 'default',
+      label: 'test2',
+      value: 'test2'
+    }];
+    let SelectR = require('../SelectR.jsx');
+    let selectrComponent = TestUtils.renderIntoDocument(
+      <SelectR
+        multiple
+        options={options}
+      />
+    );
+    let inputNode = ReactDOM.findDOMNode(selectrComponent.refs.input);
+    TestUtils.Simulate.focus(inputNode);
+    TestUtils.Simulate.click(selectrComponent.refs.optionsList.childNodes[0]);
+    TestUtils.Simulate.click(selectrComponent.refs.optionsList.childNodes[0]);
+    setTimeout(() => {
+      expect(selectrComponent.refs.selectElement.value).toEqual('test, test2');
+    }, 100);
+  });
+  it('can select only one option', () => {
+    let options = [{
+      group: 'default',
+      label: 'test',
+      value: 'test'
+    }, {
+      group: 'default',
+      label: 'test2',
+      value: 'test2'
+    }];
+    let SelectR = require('../SelectR.jsx');
+    let selectrComponent = TestUtils.renderIntoDocument(
+      <SelectR
+        multiple={false}
+        options={options}
+      />
+    );
+    let inputNode = ReactDOM.findDOMNode(selectrComponent.refs.input);
+    TestUtils.Simulate.focus(inputNode);
+    TestUtils.Simulate.click(selectrComponent.refs.optionsList.childNodes[0]);
+    TestUtils.Simulate.click(selectrComponent.refs.optionsList.childNodes[0]);
+    setTimeout(() => {
+      expect(selectrComponent.refs.selectElement.value).toEqual('test2');
+    }, 100);
   });
 });

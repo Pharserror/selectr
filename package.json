@@ -1,6 +1,6 @@
 {
   "name": "SelectR",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "A Select2 style input built in React",
   "main": "SelectR.jsx",
   "author": "Adam Lind <sunboxnet@gmail.com>",
