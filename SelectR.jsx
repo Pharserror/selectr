@@ -57,7 +57,7 @@ var SelectR = React.createClass({
       initialValue: [],
       inputWrapperClass: '',
       isSubmitAsync: true,
-      manualAJAXPrompt: 'Load more optons',
+      manualAJAXPrompt: 'Load more options',
       multiple: false,
       noMoreOptionsNotice: 'No more options available',
       noMoreOptionsListItemClasses: '',
