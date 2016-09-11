@@ -72,6 +72,7 @@ var SelectR = React.createClass({
       selectionFormatter: this.selectionFormatter,
       selectOptionsListWrapperClass: '',
       shouldLogErrors: false,
+      smartScroll: false,
       spinnerImgPath: '/images/loader.gif',
       submitMethod: 'POST',
       submitPassword: undefined,
@@ -121,7 +122,10 @@ var SelectR = React.createClass({
     });
   },
   shouldComponentUpdate: function(nextProps, nextState) {
-    /*if ((nextState.availableOptions.length > this.state.availableOptions.length) ||
+    // TODO: The component should update if:
+    // - the user input has changed
+    // - the [available/selected]Options are different than the previous
+    /*if ((nextState.availableOptions.length !== this.state.availableOptions.length) ||
         (nextProps.options.length > this.props.length)) {*/
     return true;
     /*} else {
@@ -187,111 +191,11 @@ var SelectR = React.createClass({
       timeout = setTimeout(func, time);
     }
   },
-  getAJAXSpinnerComponent: function() {
-    // The user can pass in their own React factory for something like React-Loader
-    // if they don't want to use the packaged static image
-    if (!!this.props.AJAXSpinnerComponentFactory) {
-      return this.props.AJAXSpinnerComponentFactory(this.props.AJAXSpinnerComponentProps);
-    } else {
-      return (
-        <img
-          src={this.props.spinnerImgPath}
-          className={this.props.AJAXSpinnerClasses}
-        />
-      );
-    }
-  },
   dispatcher: function(chain) {
     var toExecute = chain.pop();
     if (!!toExecute) {
       toExecute();
       this.dispatcher.call(this.dispatcher(chain), func);
-    }
-  },
-  hideOptionsList: function(event) {
-    this.setState({
-      isListHidden: true
-    });
-  },
-  loadMoreOptions: function() {
-    if (!this.state.isAJAXing) {
-      this.setState({
-        isAJAXing: true,
-        page: this.state.page
-      }, function() {
-        this.props.async(
-          this.appendFetchedOptions,
-          this.state.page,
-          this.state.currentUserInput
-        );
-        // The spinner should be showing now so we want the user to see it
-        this.refs.AJAXSpinner.scrollIntoView();
-      });
-    }
-  },
-  onBlur: function(event) {
-    // TODO: store window.keyDown and bind this.keyDown
-  },
-  onWindowResize: function(event) {
-    this.setState({
-      optionsListWidth: this.computeOptionsListWidth()
-    });
-  },
-  handleSubmitResponse: function() {
-    var response = this.responseText;
-    this.setState({ messages: 'success' });
-  },
-  isBottomOfListVisible: function() {
-    var optionsList = this.refs.optionsList;
-    // Should be equal to $options-list-max-height
-    var optionsListHeight = optionsList.clientHeight;
-    var isVisible = (optionsListHeight > 0) &&
-                    ((optionsList.scrollHeight
-                    - optionsList.clientHeight)
-                    === optionsList.scrollTop);
-    if (isVisible) {
-      this.loadMoreOptions();
-    }
-  },
-  onBackspace: function(event) {
-    if (!event.target.value || event.target.value === '') {
-      var selectedOption = this.state.selectedOptions[this.state.currentlySelectedInputOption];
-      if (!!selectedOption) {
-        var newState = {
-          currentlySelectedInputOption: this.state.currentlySelectedInputOption - 1
-        };
-        if (!!selectedOption.isNew) {
-          newState.currentUserInput = selectedOption.value;
-          this.refs.input.value = newState.currentUserInput;
-        }
-        this.setState(
-          newState,
-          this.removeSelectedOption.bind(this, selectedOption)
-        );
-      }
-    }
-  },
-  onEnterTab: function(event) {
-    event.preventDefault();
-    this.refs.input.value = '';
-    if (!!this.state.filteredOptions[this.state.currentlySelectedListOption]) {
-      this.selectOption(this.state.filteredOptions[this.state.currentlySelectedListOption]);
-    } else {
-      var newOption = {
-        isNew: true,
-        label: this.state.currentUserInput,
-        value: this.state.currentUserInput,
-        group: this.props.defaultGroupKey
-      };
-      var newState = {
-        availableOptions: new Object(this.state.availableOptions),
-        currentlySelectedInputOption: this.state.selectedOptions.length,
-        currentUserInput: '',
-        selectedOptions: Array.from(this.state.selectedOptions)
-      };
-      newState.availableOptions[this.props.defaultGroupKey].nodes.push(newOption);
-      newState.selectedOptions.push(newOption);
-      this.setState(newState, this.filterOptions.bind(this, null, ''));
     }
   },
   filterOptions: function(event, filter) {
@@ -319,6 +223,76 @@ var SelectR = React.createClass({
     };
     this.setState(newState);
   },
+  getAJAXSpinnerComponent: function() {
+    // The user can pass in their own React factory for something like React-Loader
+    // if they don't want to use the packaged static image
+    if (!!this.props.AJAXSpinnerComponentFactory) {
+      return this.props.AJAXSpinnerComponentFactory(this.props.AJAXSpinnerComponentProps);
+    } else {
+      return (
+        <img
+          src={this.props.spinnerImgPath}
+          className={this.props.AJAXSpinnerClasses}
+        />
+      );
+    }
+  },
+  handleSubmitResponse: function() {
+    var response = this.responseText;
+    this.setState({ messages: 'success' });
+  },
+  hideOptionsList: function(event) {
+    this.setState({
+      isListHidden: true
+    });
+  },
+  isBottomOfListVisible: function() {
+    var optionsList = this.refs.optionsList;
+    // Should be equal to $options-list-max-height
+    var optionsListHeight = optionsList.clientHeight;
+    var isVisible = (optionsListHeight > 0) &&
+                    ((optionsList.scrollHeight
+                    - optionsList.clientHeight)
+                    === optionsList.scrollTop);
+    return isVisible;
+  },
+  loadMoreOptions: function() {
+    if (!this.state.isAJAXing) {
+      this.setState({
+        isAJAXing: true,
+        page: this.state.page
+      }, function() {
+        this.props.async(
+          this.appendFetchedOptions,
+          this.state.page,
+          this.state.currentUserInput
+        );
+        // The spinner should be showing now so we want the user to see it
+        this.refs.AJAXSpinner.scrollIntoView();
+      });
+    }
+  },
+  onBackspace: function(event) {
+    if (!event.target.value || event.target.value === '') {
+      var selectedOption = this.state.selectedOptions[this.state.currentlySelectedInputOption];
+      if (!!selectedOption) {
+        var newState = {
+          currentlySelectedInputOption: this.state.currentlySelectedInputOption - 1
+        };
+        if (!!selectedOption.isNew) {
+          newState.currentUserInput = selectedOption.value;
+          this.refs.input.value = newState.currentUserInput;
+        }
+        this.setState(
+          newState,
+          this.removeSelectedOption.bind(this, selectedOption)
+        );
+      }
+    }
+  },
+  onBlur: function(event) {
+    // TODO: store window.keyDown and bind this.keyDown
+  },
   onChange: function(event) {
     this.setState({
       page: 1
@@ -326,6 +300,29 @@ var SelectR = React.createClass({
     //if (!!this.props.onChange) {
     //  this.props.onChange();
     //}
+  },
+  onEnterTab: function(event) {
+    event.preventDefault();
+    this.refs.input.value = '';
+    if (!!this.state.filteredOptions[this.state.currentlySelectedListOption]) {
+      this.selectOption(this.state.filteredOptions[this.state.currentlySelectedListOption]);
+    } else {
+      var newOption = {
+        isNew: true,
+        label: this.state.currentUserInput,
+        value: this.state.currentUserInput,
+        group: this.props.defaultGroupKey
+      };
+      var newState = {
+        availableOptions: new Object(this.state.availableOptions),
+        currentlySelectedInputOption: this.state.selectedOptions.length,
+        currentUserInput: '',
+        selectedOptions: Array.from(this.state.selectedOptions)
+      };
+      newState.availableOptions[this.props.defaultGroupKey].nodes.push(newOption);
+      newState.selectedOptions.push(newOption);
+      this.setState(newState, this.filterOptions.bind(this, null, ''));
+    }
   },
   onKeyDown: function(event) {
     switch (event.keyCode) {
@@ -350,9 +347,19 @@ var SelectR = React.createClass({
         break;
     }
   },
+  onScroll: function() {
+    if (this.props.infiniteScrolling && this.isBottomOfListVisible()) {
+      this.loadMoreOptions();
+    }
+  },
   onSubmit: function(event) {
     var results = selectionFormatter(event);
     this.props.submitSelection(results);
+  },
+  onWindowResize: function(event) {
+    this.setState({
+      optionsListWidth: this.computeOptionsListWidth()
+    });
   },
   populateSelectGroups: function() {
     var nodes = [];
@@ -471,7 +478,7 @@ var SelectR = React.createClass({
     );
   },
   renderLoadMoreOptionsOption: function() {
-    if (!this.props.infiniteScrolling &&
+    if ((!this.props.infiniteScrolling || this.props.smartScroll) &&
         !!this.props.async &&
         !this.state.isAJAXing &&
         this.state.canLoadMoreOptions
@@ -500,18 +507,6 @@ var SelectR = React.createClass({
         </li>
       );
     }
-  },
-  renderOptionsList: function() {
-    return (
-      <ul
-        className={this.state.isListHidden ? 'hidden' : 'active'}
-        style={{ width: this.state.optionsListWidth }}
-        ref='optionsList'
-      >
-        {this.renderOptionsForList()}
-        {this.renderLoadMoreOptionsOption()}
-      </ul>
-    );
   },
   renderOptionsForList: function() {
     var i = 1;
@@ -553,13 +548,25 @@ var SelectR = React.createClass({
     }
     return nodes;
   },
+  renderOptionsList: function() {
+    return (
+      <ul
+        className={this.state.isListHidden ? 'hidden' : 'active'}
+        style={{ width: this.state.optionsListWidth }}
+        ref='optionsList'
+      >
+        {this.renderOptionsForList()}
+        {this.renderLoadMoreOptionsOption()}
+      </ul>
+    );
+  },
   renderOptionsListContainer: function() {
     var props = {
       className: this.props.selectOptionsListWrapperClass +
                  ' options-list-container'
     };
     if (this.props.infiniteScrolling) {
-      props.onScroll = this.debounceFunc(this.isBottomOfListVisible);
+      props.onScroll = this.debounceFunc(this.onScroll);
     }
     return (
       React.createElement('div', props, this.renderOptionsList())
@@ -588,22 +595,6 @@ var SelectR = React.createClass({
     if (!!this.refs.activeListItem) {
       this.refs.optionsList.scrollTop = this.refs.activeListItem.offsetTop;
     }
-  },
-  selectOption: function(option) {
-    var newState = { currentUserInput: '' };
-    if (this.props.multiple) {
-      newState.selectedOptions = Array.from(this.state.selectedOptions);
-      newState.selectedOptions = newState.selectedOptions.concat(option);
-      newState.currentlySelectedInputOption = this.state.selectedOptions.length;
-    } else if (!!this.state.selectedOptions[0]) {
-      this.removeSelectedOption(this.state.selectedOptions[0]);
-      newState.selectedOptions = [option];
-      newState.currentlySelectedInputOption = 0;
-    }
-    this.setState(newState, function() {
-      this.refs.input.focus();
-      this.filterOptions(undefined, this.state.currentUserInput);
-    });
   },
   selectFromList: function(selection) {
     var selectedOption = this.state.currentlySelectedListOption;
@@ -645,6 +636,22 @@ var SelectR = React.createClass({
       }
     }
     return selectedOptions;
+  },
+  selectOption: function(option) {
+    var newState = { currentUserInput: '' };
+    if (this.props.multiple) {
+      newState.selectedOptions = Array.from(this.state.selectedOptions);
+      newState.selectedOptions = newState.selectedOptions.concat(option);
+      newState.currentlySelectedInputOption = this.state.selectedOptions.length;
+    } else if (!!this.state.selectedOptions[0]) {
+      this.removeSelectedOption(this.state.selectedOptions[0]);
+      newState.selectedOptions = [option];
+      newState.currentlySelectedInputOption = 0;
+    }
+    this.setState(newState, function() {
+      this.refs.input.focus();
+      this.filterOptions(undefined, this.state.currentUserInput);
+    });
   },
   submitSelection: function(selection) {
     var request = new XMLHttpRequest();

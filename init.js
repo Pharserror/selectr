@@ -36,7 +36,8 @@ $(document).on('ready', function() {
         options: options,
         rootParentId: 'root',
         initialValue: [options[0]],
-        multiple: false
+        multiple: true,
+        smartScroll: true
       }
     ),
     document.getElementById('root')
