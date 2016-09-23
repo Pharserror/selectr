@@ -37,6 +37,64 @@ Now,
 
 ## Usage
 
+### General Concept
+
+Looking at the initial state for the component there are 3 properties that should be taken into account:
+- `availableOptions`: This is the most important of the three. This is an object in the format of:
+```javascript
+{
+  groupKey: {
+    label: 'group label text',
+    nodes: [{
+      label: 'Option text visible to user',
+      group: 'groupKey',
+      value: 'value inserted into value attribute of <option> tag'
+    }, /* ... more nodes */ ]
+  }, // ... more groups 
+}
+```
+    - The `availableOptions` object represents, in a JS way, the DOM structure of what is being created. Please see the following image.
+- `filteredOptions`: This is an array in the format of:
+```javascript
+[{
+    label: 'Option text visible to user',
+    group: 'groupKey',
+    value: 'value inserted into value attribute of <option> tag'
+}, /* ... more nodes */ ]
+```
+    - This array should contain nodes plucked from the available options based on the `currentUserInput`.
+- `selectedOptions`: This is an array in the same format as `filteredOptions` except this array's objects have been plucked from the array of `filteredOptions`.
+
+The general application flow is this:
+
+#### Initiation
+
+1. Component loads with a prop `options` in the same format as `filteredOptions` or a prop `async` that is a function that will return an object in the form of `filteredOptions`.
+2. If a `defaultGroupKey` prop is supplied then all of the `options` will be put into the `availableOptions`'s `nodes` under this key; otherwise, the key will default to `default`.
+3. If the `multiple` prop is set to `true` then the `groupKey`'s of the `availableOptions` will be assigned to `<optgroup>`'s that will be rendered in a hidden-by-default `<select>` element which will hold the actually selected options: the options that a user sees as selected are just a facade.
+4. The `nodes` inside each `groupKey`'s `nodes` array will be responsible for rendering `option` elements inside each `optgroup` (if `multiple` is set to `true`) with the matching `group` `groupKey` in the form of: `<option value={node.value}>{node.label}</option>` 
+
+#### User Interaction - Selection
+
+1. The user clicks the `<input>`.
+2. If there are groups the user will see each set of options under the group header; otherwise, they will just see the options.
+3. The user potentially types something.
+4. The option's `li` elements are removed from the list if they do not match the `currentUserInput`.
+5. A user selects an option.
+6. The `filteredOptions` are looked through until the option with the matching value is found, it is then plucked from the `filteredOptions` and placed into the `selectedOptions` which, upon component re-render, sets a `selected` attribute flag on the corresponding `<option>` in the invisible `<select>`.
+
+### User Interaction - Deletion
+
+1. A user clicks the close/dismissal icon for an option.
+2. The `selectedOptions` are looked through until the one with the matching value is found: it is then plucked from the `selectedOptions` and placed back into the `availableOptions` - if it matches the `currentUserInput` then the user will see it reappear.
+
+### User Interaction - Creation and Modification
+
+1. The user clicks the `<input>` and enters some text.
+2. The option they are looking for is not available so they hit enter, or click the `createOptionPrompt` (NYI) if no more options are available.
+3. A new `<option>` will be inserted into the hidden `<select>` with the entered text set as the `value` attribute.
+4. 
+
 ### Props
 
 | Property Name                 | Default Value                                       | Description                                                                                                                                                                         |
@@ -96,3 +154,12 @@ Now,
 | optionsListWidth             | '0px'                                   | Current width of the list of options visible to the user: is updated `onWindowResize`.                                                                |
 | page                         | 1                                       | Current page of options related to the `currentUserInput`: is reset upon deletion of input.                                                           |
 | selectedOptions              | []                                      | Array of objects in the format of `{ label: '', group: '', value: '' }` that determines which objects are selected.                                   |
+
+### SCSS VARIABLES
+
+Please see the image below for a visual description of what each variable modifies.
+
+### Improvements
+- Add a prop to show the group label in the selected options; i.e., for a group 'clients' with node labels of emails a selected option would have the text "clients: anywaysjim@howyadoin.com". Could even allow the delimiter to be customizable from just a colon.
+- Add a boolean prop to determine whether or not a group header stays sticky for as long as its elements are being scrolled.
+- Add a boolean prop to enable/disable a prompt for option creation shown when there are no more options available.
