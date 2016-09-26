@@ -24,7 +24,7 @@ function generateRandomOptions(callback, page, currentUserInput) {
     return options;
   }
 }
-$(document).on('ready', function() {
+$(document).ready(function() {
   var options = generateRandomOptions();
   ReactDOM.render(
     React.createElement(

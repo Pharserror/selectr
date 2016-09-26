@@ -88,12 +88,14 @@ The general application flow is this:
 1. A user clicks the close/dismissal icon for an option.
 2. The `selectedOptions` are looked through until the one with the matching value is found: it is then plucked from the `selectedOptions` and placed back into the `availableOptions` - if it matches the `currentUserInput` then the user will see it reappear.
 
-### User Interaction - Creation and Modification
+### User Interaction - Creation
 
 1. The user clicks the `<input>` and enters some text.
 2. The option they are looking for is not available so they hit enter, or click the `createOptionPrompt` (NYI) if no more options are available.
 3. A new `<option>` will be inserted into the hidden `<select>` with the entered text set as the `value` attribute.
-4. 
+
+### User Interaction - Modification
+1. Once a user has created an option they may edit the option if it is at the end of the list by pressing backspace; or, if it is in another position the user may select it by pressing the left or right arrows to select and then press backspace to edit.
 
 ### Props
 
