@@ -40,7 +40,9 @@ Now,
 ### General Concept
 
 Looking at the initial state for the component there are 3 properties that should be taken into account:
+
 - `availableOptions`: This is the most important of the three. This is an object in the format of:
+
 ```javascript
 {
   groupKey: {
@@ -53,8 +55,11 @@ Looking at the initial state for the component there are 3 properties that shoul
   }, // ... more groups 
 }
 ```
-    - The `availableOptions` object represents, in a JS way, the DOM structure of what is being created. Please see the following image.
+
+- The `availableOptions` object represents, in a JS way, the DOM structure of what is being created. Please see the following image.
+
 - `filteredOptions`: This is an array in the format of:
+
 ```javascript
 [{
     label: 'Option text visible to user',
@@ -62,7 +67,9 @@ Looking at the initial state for the component there are 3 properties that shoul
     value: 'value inserted into value attribute of <option> tag'
 }, /* ... more nodes */ ]
 ```
-    - This array should contain nodes plucked from the available options based on the `currentUserInput`.
+
+- This array should contain nodes plucked from the available options based on the `currentUserInput`.
+
 - `selectedOptions`: This is an array in the same format as `filteredOptions` except this array's objects have been plucked from the array of `filteredOptions`.
 
 The general application flow is this:
@@ -159,7 +166,7 @@ The general application flow is this:
 
 ### SCSS VARIABLES
 
-Please see the image below for a visual description of what each variable modifies.
+Coming soon: I hope the variable names help at least a little (sorry).
 
 ### Improvements
 - Add a prop to show the group label in the selected options; i.e., for a group 'clients' with node labels of emails a selected option would have the text "clients: anywaysjim@howyadoin.com". Could even allow the delimiter to be customizable from just a colon.
