@@ -74,14 +74,14 @@ Looking at the initial state for the component there are 3 properties that shoul
 
 The general application flow is this:
 
-#### Initiation
+### Initiation
 
 1. Component loads with a prop `options` in the same format as `filteredOptions` or a prop `async` that is a function that will return an object in the form of `filteredOptions`.
 2. If a `defaultGroupKey` prop is supplied then all of the `options` will be put into the `availableOptions`'s `nodes` under this key; otherwise, the key will default to `default`.
 3. If the `multiple` prop is set to `true` then the `groupKey`'s of the `availableOptions` will be assigned to `<optgroup>`'s that will be rendered in a hidden-by-default `<select>` element which will hold the actually selected options: the options that a user sees as selected are just a facade.
 4. The `nodes` inside each `groupKey`'s `nodes` array will be responsible for rendering `option` elements inside each `optgroup` (if `multiple` is set to `true`) with the matching `group` `groupKey` in the form of: `<option value={node.value}>{node.label}</option>` 
 
-#### User Interaction - Selection
+### User Interaction - Selection
 
 1. The user clicks the `<input>`.
 2. If there are groups the user will see each set of options under the group header; otherwise, they will just see the options.
@@ -154,7 +154,7 @@ The general application flow is this:
 | canLoadMoreOptions           | false                                   | Boolean that keeps track of whether or not `this.props.async` can actually return more options.                                                       |
 | currentlySelectedInputOption | -1                                      | Index of the visible option that is currently selected. Pressing left/right on the keyboard will focus a new option and decrease/increase this value. |
 | currentlySelectedListOption  | 0                                       | Index of the visible option in the list that is currently "selected"/highlighted. Pressing up/down on the keyboard will decrease/increase this value. |
-| currentUserInput             | ""                                      | Current value of the `value` attribute of the `<input>`.                                                                                              |
+| currentUserInput             | ''                                      | Current value of the `value` attribute of the `<input>`.                                                                                              |
 | filteredOptions              | []                                      | Options in the list that the user can see based off of the `currentUserInput`.                                                                        |
 | invisibleScreenClass         | 'hidden'                                | String of either `'hidden'` or `''` to be applied as a class to the invisible screen `div` when the input is closed or open, respectively.            |
 | isAJAXing                    | false                                   | Boolean to keep track of if a request for more options is currently being fired through `this.props.async`.                                           |
@@ -168,7 +168,7 @@ The general application flow is this:
 
 Coming soon: I hope the variable names help at least a little (sorry).
 
-### Improvements
+## Improvements
 - Add a prop to show the group label in the selected options; i.e., for a group 'clients' with node labels of emails a selected option would have the text "clients: anywaysjim@howyadoin.com". Could even allow the delimiter to be customizable from just a colon.
 - Add a boolean prop to determine whether or not a group header stays sticky for as long as its elements are being scrolled.
 - Add a boolean prop to enable/disable a prompt for option creation shown when there are no more options available.
