@@ -34,6 +34,7 @@ Now,
 
 ### Known bugs
 - Selection at the end of the input with infiniteScrolling set to true will trigger another AJAX call to load more options. Solutions are to introduce a boolean prop to force the input to close after selection or scroll the list back to the top. A third, more state intensive option, would be to track if the bottom of the list had been reached and then an option had been selected and reset that onScroll.
+- Adding custom tags doesn't work because pressing enter when the dropdown is open selects the first item
 
 ## Usage
 
