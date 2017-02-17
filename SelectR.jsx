@@ -199,7 +199,7 @@ var SelectR = React.createClass({
     }
   },
   filterOptions: function(event, filter) {
-    var filterExp = !!event ? new RegExp(event.target.value) : new RegExp(filter);
+    var filterExp = !!event ? new RegExp(this.state.currentUserInput) : new RegExp(filter);
     var selectedOptionsValues = this.state.selectedOptions.map(function(option, index, options) {
       return option.value;
     });
@@ -211,7 +211,6 @@ var SelectR = React.createClass({
     }
     var newState = {
       currentlySelectedListOption: 0,
-      currentUserInput: !!event ? event.target.value : filter,
       filteredOptions: availableOptions.filter(function(option) {
         return (
           !!option.label.match(filterExp) &&
@@ -295,6 +294,7 @@ var SelectR = React.createClass({
   },
   onChange: function(event) {
     this.setState({
+      currentUserInput: event.target.value,
       page: 1
     }, this.filterOptions.bind(this, event));
     //if (!!this.props.onChange) {
@@ -304,7 +304,8 @@ var SelectR = React.createClass({
   onEnterTab: function(event) {
     event.preventDefault();
     this.refs.input.value = '';
-    if (!!this.state.filteredOptions[this.state.currentlySelectedListOption]) {
+    if (!!this.state.filteredOptions[this.state.currentlySelectedListOption] &&
+        this.state.currentUserInput === '') {
       this.selectOption(this.state.filteredOptions[this.state.currentlySelectedListOption]);
     } else {
       var newOption = {
