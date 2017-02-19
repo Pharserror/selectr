@@ -12,7 +12,8 @@ module.exports = {
     filename: '[name].js',
     libraryTarget: 'umd',
     library: 'selectr',
-    publicPath: '/'
+    publicPath: '/',
+    umdNamedDefine: true
   },
   module: {
     // our loaders are our transpilers and interpreters such as Babel
@@ -38,6 +39,6 @@ module.exports = {
     modulesDirectories: ['node_modules']
   },
   externals: {
-    'react': 'umd React'
+    'react': 'umd react'
   }
 };
