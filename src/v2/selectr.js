@@ -1,3 +1,4 @@
+require('../../selectr.scss');
 import React, { Component, PropTypes } from 'react';
 
 export default class Selectr extends Component {
