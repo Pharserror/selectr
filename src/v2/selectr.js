@@ -4,6 +4,18 @@ export default class selectr extends Component {
   constructor(props) {
     super(props);
 
+    this.USER_DEFINED = {
+      FUNCTIONS: ['onChange', 'selectionFormatter', 'submitSelection']
+    }
+
+    this.USER_DEFINED.FUNCTIONS.forEach(func => {
+      this[func] = (
+        !!this.props[func]
+        ? this.props[func].bind(this)
+        : this[func].bind(this)
+      );
+    }, this);
+
     this.state = {
       availableOptions:             { default: { label: '', nodes: [] } },
       canLoadMoreOptions:           false,
@@ -796,7 +808,6 @@ selectr.defaultProps = {
   multiple:                      false,
   noMoreOptionsNotice:           'No more options available',
   noMoreOptionsListItemClasses:  '',
-  onChange:                      () => { this.onChange(); },
   options:                       [],
   optionsListItemClass:          'list-item',
   pageSize:                      10,
@@ -804,14 +815,12 @@ selectr.defaultProps = {
   rootParentId:                  'root',
   selectElementClass:            'hidden',
   selectElementName:             '',
-  selectionFormatter:            this.selectionFormatter,
   selectOptionsListWrapperClass: '',
   shouldLogErrors:               false,
   smartScroll:                   false,
   spinnerImgPath:                '/images/loader.gif',
   submitMethod:                  'POST',
   submitPassword:                undefined,
-  submitSelection:               this.submitSelection,
   submitUrl:                     'http://localhost:3000',
   submitUser:                    undefined,
   wrapperClass:                  ''

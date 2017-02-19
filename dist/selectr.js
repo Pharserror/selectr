@@ -89,6 +89,14 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	    var _this = _possibleConstructorReturn(this, (selectr.__proto__ || Object.getPrototypeOf(selectr)).call(this, props));
 
+	    _this.USER_DEFINED = {
+	      FUNCTIONS: ['onChange', 'selectionFormatter', 'submitSelection']
+	    };
+
+	    _this.USER_DEFINED.FUNCTIONS.forEach(function (func) {
+	      _this[func] = !!_this.props[func] ? _this.props[func].bind(_this) : _this[func].bind(_this);
+	    }, _this);
+
 	    _this.state = {
 	      availableOptions: { default: { label: '', nodes: [] } },
 	      canLoadMoreOptions: false,
@@ -883,9 +891,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	  multiple: false,
 	  noMoreOptionsNotice: 'No more options available',
 	  noMoreOptionsListItemClasses: '',
-	  onChange: function onChange() {
-	    undefined.onChange();
-	  },
 	  options: [],
 	  optionsListItemClass: 'list-item',
 	  pageSize: 10,
@@ -893,14 +898,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	  rootParentId: 'root',
 	  selectElementClass: 'hidden',
 	  selectElementName: '',
-	  selectionFormatter: undefined.selectionFormatter,
 	  selectOptionsListWrapperClass: '',
 	  shouldLogErrors: false,
 	  smartScroll: false,
 	  spinnerImgPath: '/images/loader.gif',
 	  submitMethod: 'POST',
 	  submitPassword: undefined,
-	  submitSelection: undefined.submitSelection,
 	  submitUrl: 'http://localhost:3000',
 	  submitUser: undefined,
 	  wrapperClass: ''
