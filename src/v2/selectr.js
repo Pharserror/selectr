@@ -1,6 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 
-export default class selectr extends Component {
+export default class Selectr extends Component {
   constructor(props) {
     super(props);
 
@@ -824,4 +824,4 @@ selectr.defaultProps = {
   submitUrl:                     'http://localhost:3000',
   submitUser:                    undefined,
   wrapperClass:                  ''
-}
+};

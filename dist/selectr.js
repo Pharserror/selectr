@@ -81,13 +81,13 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-	var selectr = function (_Component) {
-	  _inherits(selectr, _Component);
+	var Selectr = function (_Component) {
+	  _inherits(Selectr, _Component);
 
-	  function selectr(props) {
-	    _classCallCheck(this, selectr);
+	  function Selectr(props) {
+	    _classCallCheck(this, Selectr);
 
-	    var _this = _possibleConstructorReturn(this, (selectr.__proto__ || Object.getPrototypeOf(selectr)).call(this, props));
+	    var _this = _possibleConstructorReturn(this, (Selectr.__proto__ || Object.getPrototypeOf(Selectr)).call(this, props));
 
 	    _this.USER_DEFINED = {
 	      FUNCTIONS: ['onChange', 'selectionFormatter', 'submitSelection']
@@ -115,7 +115,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return _this;
 	  }
 
-	  _createClass(selectr, [{
+	  _createClass(Selectr, [{
 	    key: 'componentDidMount',
 	    value: function componentDidMount() {
 	      var _this2 = this;
@@ -826,10 +826,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 	  }]);
 
-	  return selectr;
+	  return Selectr;
 	}(_react.Component);
 
-	exports.default = selectr;
+	exports.default = Selectr;
 
 
 	selectr.propTypes = {
