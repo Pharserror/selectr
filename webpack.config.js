@@ -3,13 +3,15 @@ module.exports = {
   // entry is the file that renders our React app.
   entry: {
     selectr: [
-      './SelectR.jsx'
+      './src/v2/selectr'
     ]
   },
   output: {
     path: __dirname + '/dist',
     // filename is the name of the output file that will be compiled by Webpack
     filename: '[name].js',
+    // libraryTarget: 'var',
+    // library: 'SelectR',
     publicPath: '/'
   },
   module: {
@@ -27,14 +29,12 @@ module.exports = {
         test: /\.scss$/,
         loaders: ['style', 'css', 'sass']
       }
-    ]
+    ],
+    noParse: ['react']
   },
   resolve: {
     extensions: ['', '.js', '.jsx'],
     // modulesDirectories tells Webpack where stuff lives when we do require('some-module')
     modulesDirectories: ['node_modules']
-  },
-  externals: {
-    'react': 'React'
   }
 };
