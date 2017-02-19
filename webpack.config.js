@@ -35,6 +35,6 @@ module.exports = {
     modulesDirectories: ['node_modules']
   },
   externals: {
-    'react': 'umd react'
+    'react': 'react'
   }
 };

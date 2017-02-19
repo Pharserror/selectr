@@ -741,7 +741,7 @@
 /* 2 */
 /***/ function(module, exports) {
 
-	module.exports = __WEBPACK_EXTERNAL_MODULE_2__;
+	module.exports = react;
 
 /***/ }
 /******/ ]);

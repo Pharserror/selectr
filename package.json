@@ -1,6 +1,6 @@
 {
   "name": "SelectR",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A Select2 style input built in React",
   "main": "dist/selectr.js",
   "author": "Adam Lind <sunboxnet@gmail.com>",
@@ -53,7 +53,6 @@
     "path": "0.12.7",
     "sass-loader": "^4.0.0",
     "style-loader": "^0.13.1",
-    "webpack": "^1.12.4",
     "webpack-dev-middleware": "1.6.1"
   },
   "dependencies": {
