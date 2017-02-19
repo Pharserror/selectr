@@ -1,6 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 
-export class selectr extends Component {
+export default class selectr extends Component {
   constructor(props) {
     super(props);
 
@@ -777,7 +777,7 @@ selectr.propTypes = {
   wrapperClass:                  PropTypes.string
 };
 
-export default new connector(selectr, {
+selectr.defaultProps = {
   AJAXSpinnerClasses:            'ajax-spinner',
   AJAXSpinnerComponentFactory:   undefined,
   AJAXSpinnerComponentProps:     {},
@@ -815,4 +815,4 @@ export default new connector(selectr, {
   submitUrl:                     'http://localhost:3000',
   submitUser:                    undefined,
   wrapperClass:                  ''
-});
+}

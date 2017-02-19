@@ -10,8 +10,8 @@ module.exports = {
     path: __dirname + '/dist',
     // filename is the name of the output file that will be compiled by Webpack
     filename: '[name].js',
-    // libraryTarget: 'var',
-    // library: 'SelectR',
+    libraryTarget: 'umd',
+    library: 'selectr',
     publicPath: '/'
   },
   module: {
@@ -36,5 +36,8 @@ module.exports = {
     extensions: ['', '.js', '.jsx'],
     // modulesDirectories tells Webpack where stuff lives when we do require('some-module')
     modulesDirectories: ['node_modules']
+  },
+  externals: {
+    'react': 'umd React'
   }
 };
