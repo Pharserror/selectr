@@ -832,7 +832,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.default = Selectr;
 
 
-	selectr.propTypes = {
+	Selectr.propTypes = {
 	  AJAXSpinnerClasses: _react.PropTypes.string,
 	  AJAXSpinnerComponentFactory: _react.PropTypes.func,
 	  AJAXSpinnerComponentProps: _react.PropTypes.object,
@@ -872,7 +872,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  wrapperClass: _react.PropTypes.string
 	};
 
-	selectr.defaultProps = {
+	Selectr.defaultProps = {
 	  AJAXSpinnerClasses: 'ajax-spinner',
 	  AJAXSpinnerComponentFactory: undefined,
 	  AJAXSpinnerComponentProps: {},

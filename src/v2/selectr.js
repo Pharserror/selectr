@@ -749,7 +749,7 @@ export default class Selectr extends Component {
   }
 }
 
-selectr.propTypes = {
+Selectr.propTypes = {
   AJAXSpinnerClasses:            PropTypes.string,
   AJAXSpinnerComponentFactory:   PropTypes.func,
   AJAXSpinnerComponentProps:     PropTypes.object,
@@ -789,7 +789,7 @@ selectr.propTypes = {
   wrapperClass:                  PropTypes.string
 };
 
-selectr.defaultProps = {
+Selectr.defaultProps = {
   AJAXSpinnerClasses:            'ajax-spinner',
   AJAXSpinnerComponentFactory:   undefined,
   AJAXSpinnerComponentProps:     {},
