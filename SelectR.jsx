@@ -1,6 +1,5 @@
 var React = require('react');
 
-
 var SelectR = React.createClass({
   propTypes: {
     AJAXSpinnerClasses: React.PropTypes.string,
