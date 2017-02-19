@@ -422,14 +422,15 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }, {
 	    key: 'populateSelectGroups',
 	    value: function populateSelectGroups() {
-	      var nodes = [];
+	      var groups = void 0,
+	          nodes = [];
 
 	      if (!!this.props.groups) {
-	        var _groups = new Object(this.props.groups);
+	        groups = new Object(this.props.groups);
 	      } else {
-	        var _groups2 = {};
+	        groups = {};
 
-	        _groups2[this.props.defaultGroupKey] = {
+	        groups[this.props.defaultGroupKey] = {
 	          label: '',
 	          nodes: Array.from(this.state.availableOptions)
 	        };

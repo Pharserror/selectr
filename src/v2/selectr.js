@@ -337,12 +337,13 @@ export default class Selectr extends Component {
   }
 
   populateSelectGroups() {
-    let nodes = [];
+    let groups
+      , nodes = [];
 
     if (!!this.props.groups) {
-      let groups = new Object(this.props.groups);
+      groups = new Object(this.props.groups);
     } else {
-      let groups = {};
+      groups = {};
 
       groups[this.props.defaultGroupKey] = {
         label: '',
