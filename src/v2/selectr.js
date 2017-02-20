@@ -9,7 +9,6 @@ export default class Selectr extends Component {
       FUNCTIONS: {
         onBlur:             null,
         onChange:           null,
-        onFocus:            null,
         onKeyDown:          null,
         selectionFormatter: null,
         submitSelection:    null,

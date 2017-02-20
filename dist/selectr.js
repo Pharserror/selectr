@@ -95,7 +95,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	      FUNCTIONS: {
 	        onBlur: null,
 	        onChange: null,
-	        onFocus: null,
 	        onKeyDown: null,
 	        selectionFormatter: null,
 	        submitSelection: null,
