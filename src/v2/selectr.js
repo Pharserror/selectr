@@ -6,16 +6,28 @@ export default class Selectr extends Component {
     super(props);
 
     this.USER_DEFINED = {
-      FUNCTIONS: ['onChange', 'selectionFormatter', 'submitSelection']
-    }
+      FUNCTIONS: {
+        onBlur:             null,
+        onChange:           null,
+        onFocus:            null,
+        onKeyDown:          null,
+        selectionFormatter: null,
+        submitSelection:    null,
+        toggleOptionsList:  [false]
+      }
+    };
 
-    this.USER_DEFINED.FUNCTIONS.forEach(func => {
-      this[func] = (
-        !!this.props[func]
-        ? this.props[func].bind(this)
-        : this[func].bind(this)
+    for (let funcName in this.USER_DEFINED.FUNCTIONS) {
+      this[funcName] = (
+        !!this.props[funcName]
+        ? !!this.USER_DEFINED.FUNCTIONS[funcName]
+          ? this.props[funcName].apply(this, this.USER_DEFINED.FUNCTIONS[funcName])
+          : this.props[funcName].bind(this)
+        : !!this.USER_DEFINED.FUNCTIONS[funcName]
+          ? this[funcName].apply(this, this.USER_DEFINED.FUNCTIONS[funcName])
+          : this[funcName].bind(this)
       );
-    }, this);
+    }
 
     this.state = {
       availableOptions:             { default: { label: '', nodes: [] } },
@@ -735,7 +747,7 @@ export default class Selectr extends Component {
               <input
                 onChange={this.onChange}
                 onBlur={this.onBlur}
-                onFocus={this.toggleOptionsList.bind(this, false)}
+                onFocus={this.toggleOptionsList}
                 onKeyDown={this.onKeyDown}
                 placeholder={this.props.placeholder}
                 ref='input'

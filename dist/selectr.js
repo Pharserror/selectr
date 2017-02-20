@@ -92,12 +92,20 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var _this = _possibleConstructorReturn(this, (Selectr.__proto__ || Object.getPrototypeOf(Selectr)).call(this, props));
 
 	    _this.USER_DEFINED = {
-	      FUNCTIONS: ['onChange', 'selectionFormatter', 'submitSelection']
+	      FUNCTIONS: {
+	        onBlur: null,
+	        onChange: null,
+	        onFocus: null,
+	        onKeyDown: null,
+	        selectionFormatter: null,
+	        submitSelection: null,
+	        toggleOptionsList: [false]
+	      }
 	    };
 
-	    _this.USER_DEFINED.FUNCTIONS.forEach(function (func) {
-	      _this[func] = !!_this.props[func] ? _this.props[func].bind(_this) : _this[func].bind(_this);
-	    }, _this);
+	    for (var funcName in _this.USER_DEFINED.FUNCTIONS) {
+	      _this[funcName] = !!_this.props[funcName] ? !!_this.USER_DEFINED.FUNCTIONS[funcName] ? _this.props[funcName].apply(_this, _this.USER_DEFINED.FUNCTIONS[funcName]) : _this.props[funcName].bind(_this) : !!_this.USER_DEFINED.FUNCTIONS[funcName] ? _this[funcName].apply(_this, _this.USER_DEFINED.FUNCTIONS[funcName]) : _this[funcName].bind(_this);
+	    }
 
 	    _this.state = {
 	      availableOptions: { default: { label: '', nodes: [] } },
@@ -814,7 +822,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	              _react2.default.createElement('input', {
 	                onChange: this.onChange,
 	                onBlur: this.onBlur,
-	                onFocus: this.toggleOptionsList.bind(this, false),
+	                onFocus: this.toggleOptionsList,
 	                onKeyDown: this.onKeyDown,
 	                placeholder: this.props.placeholder,
 	                ref: 'input',
