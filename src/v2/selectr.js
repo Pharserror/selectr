@@ -19,12 +19,14 @@ export default class Selectr extends Component {
     for (let funcName in this.USER_DEFINED.FUNCTIONS) {
       this[funcName] = (
         !!this.props[funcName]
-        ? !!this.USER_DEFINED.FUNCTIONS[funcName]
-          ? this.props[funcName].apply(this, this.USER_DEFINED.FUNCTIONS[funcName])
+        ? (
+          !!this.USER_DEFINED.FUNCTIONS[funcName]
+          ? this.props[funcName].bind(this, ...this.USER_DEFINED.FUNCTIONS[funcName])
           : this.props[funcName].bind(this)
-        : !!this.USER_DEFINED.FUNCTIONS[funcName]
-          ? this[funcName].apply(this, this.USER_DEFINED.FUNCTIONS[funcName])
+        ) : (!!this.USER_DEFINED.FUNCTIONS[funcName]
+          ? this[funcName].bind(this, ...this.USER_DEFINED.FUNCTIONS[funcName])
           : this[funcName].bind(this)
+        )
       );
     }
 

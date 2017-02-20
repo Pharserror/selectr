@@ -75,6 +75,8 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+	function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
+
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
@@ -103,7 +105,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	    };
 
 	    for (var funcName in _this.USER_DEFINED.FUNCTIONS) {
-	      _this[funcName] = !!_this.props[funcName] ? !!_this.USER_DEFINED.FUNCTIONS[funcName] ? _this.props[funcName].apply(_this, _this.USER_DEFINED.FUNCTIONS[funcName]) : _this.props[funcName].bind(_this) : !!_this.USER_DEFINED.FUNCTIONS[funcName] ? _this[funcName].apply(_this, _this.USER_DEFINED.FUNCTIONS[funcName]) : _this[funcName].bind(_this);
+	      var _this$props$funcName, _this$funcName;
+
+	      _this[funcName] = !!_this.props[funcName] ? !!_this.USER_DEFINED.FUNCTIONS[funcName] ? (_this$props$funcName = _this.props[funcName]).bind.apply(_this$props$funcName, [_this].concat(_toConsumableArray(_this.USER_DEFINED.FUNCTIONS[funcName]))) : _this.props[funcName].bind(_this) : !!_this.USER_DEFINED.FUNCTIONS[funcName] ? (_this$funcName = _this[funcName]).bind.apply(_this$funcName, [_this].concat(_toConsumableArray(_this.USER_DEFINED.FUNCTIONS[funcName]))) : _this[funcName].bind(_this);
 	    }
 
 	    _this.state = {
