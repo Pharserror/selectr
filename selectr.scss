@@ -3,6 +3,7 @@ $root-z-index: 9999;
 // INPUT
 $input-width: 333px;
 // INPUT-CONTAINER
+$input-container-background-color: #FFF;
 $input-container-border-bottom-left-radius: 4px;
 $input-container-border-bottom-right-radius: 4px;
 $input-container-border-top-left-radius: 4px;
@@ -112,6 +113,7 @@ $ajax-spinner-width: 20px;
     }
   }
   .input-container {
+    background-color: $input-container-background-color;
     border-bottom-left-radius: $input-container-border-bottom-left-radius;
     border-bottom-right-radius: $input-container-border-bottom-right-radius;
     border-top-left-radius: $input-container-border-top-left-radius;

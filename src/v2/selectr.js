@@ -262,7 +262,7 @@ export default class Selectr extends Component {
         };
         if (!!selectedOption.isNew) {
           newState.currentUserInput = selectedOption.value;
-          this.refs.input.value = newState.currentUserInput;
+          this.refs.selectrInput.value = newState.currentUserInput;
         }
         this.setState(
           newState,
@@ -288,7 +288,7 @@ export default class Selectr extends Component {
 
   onEnterTab(event) {
     event.preventDefault();
-    this.refs.input.value = '';
+    this.refs.selectrInput.value = '';
 
     if (!!this.state.filteredOptions[this.state.currentlySelectedListOption] &&
         this.state.currentUserInput === '') {
@@ -305,11 +305,16 @@ export default class Selectr extends Component {
           availableOptions: new Object(this.state.availableOptions),
           currentlySelectedInputOption: this.state.selectedOptions.length,
           currentUserInput: '',
-          selectedOptions: Array.from(this.state.selectedOptions)
+          selectedOptions: (
+            this.props.multiple
+            ? Array.from(this.state.selectedOptions).concat(newOption)
+            : [newOption]
+          )
         };
 
+      // TODO: potentially need to remove this option from the availableOptions
+      // list if a user deletes it
       newState.availableOptions[this.props.defaultGroupKey].nodes.push(newOption);
-      newState.selectedOptions.push(newOption);
       this.setState(newState, this.filterOptions.bind(this, null, ''));
     }
   }
@@ -695,7 +700,7 @@ export default class Selectr extends Component {
     }
 
     this.setState(newState, () => {
-      this.refs.input.focus();
+      this.refs.selectrInput.focus();
       this.filterOptions(undefined, this.state.currentUserInput);
     });
   }
@@ -752,12 +757,14 @@ export default class Selectr extends Component {
             {this.renderSelectedOptionTags()}
             <li>
               <input
+                className={this.props.inputClasses}
+                name={this.props.inputName}
                 onChange={this.onChange}
                 onBlur={this.onBlur}
                 onFocus={this.toggleOptionsList}
                 onKeyDown={this.onKeyDown}
                 placeholder={this.props.placeholder}
-                ref='input'
+                ref={this.props.inputRef}
                 type='text'
               />
             </li>
@@ -784,6 +791,9 @@ Selectr.propTypes = {
   groups:                        PropTypes.object,
   infiniteScrolling:             PropTypes.bool,
   initialValue:                  PropTypes.array,
+  inputClasses:                  PropTypes.string,
+  inputName:                     PropTypes.string,
+  inputRef:                      PropTypes.string,
   inputWrapperClass:             PropTypes.string,
   isSubmitAsync:                 PropTypes.bool,
   manualAJAXPrompt:              PropTypes.string,
@@ -823,6 +833,7 @@ Selectr.defaultProps = {
   groups:                        { default: { label: '', nodes: [] } },
   infiniteScrolling:             false,
   initialValue:                  [],
+  inputRef:                      'selectrInput',
   inputWrapperClass:             '',
   isSubmitAsync:                 true,
   manualAJAXPrompt:              'Load more options',
