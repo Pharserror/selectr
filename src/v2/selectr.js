@@ -7,12 +7,16 @@ export default class Selectr extends Component {
 
     this.USER_DEFINED = {
       FUNCTIONS: {
-        onBlur:             null,
-        onChange:           null,
-        onKeyDown:          null,
-        selectionFormatter: null,
-        submitSelection:    null,
-        toggleOptionsList:  [false]
+        appendFetchedOptions: null,
+        filterOptions:        null,
+        hideOptionsList:      null,
+        loadMoreOptions:      null,
+        onBlur:               null,
+        onChange:             null,
+        onKeyDown:            null,
+        selectionFormatter:   null,
+        submitSelection:      null,
+        toggleOptionsList:    [false]
       }
     };
 
@@ -61,7 +65,7 @@ export default class Selectr extends Component {
     if (!!this.props.initialValue) {
       newState.selectedOptions = Array.from(this.props.initialValue);
     }
-    if (!!this.props.options) {
+    if (!!this.props.options && this.props.options.length > 0) {
       this.appendFetchedOptions(this.props.options);
     }
 
@@ -85,16 +89,18 @@ export default class Selectr extends Component {
   }
 
   appendFetchedOptions(options) {
-    let availableOptionsValues = [];
-    let callback =
-      options.callback ||
-      !!this.props.async
-      ? this.setState.bind(
-        this,
-        { page: this.state.page + 1 }
-      ) : (() => { return; });
-    // We want to append any options to what we already have
-    let newState = { availableOptions: new Object(this.state.availableOptions) };
+    let availableOptionsValues = []
+      // TODO: Not sure what this is for
+      // , callback =
+      //   options.callback ||
+      //   !!this.props.async
+      //   ? this.setState.bind(
+      //     this,
+      //     { page: this.state.page + 1 }
+      //   ) : (() => { return; })
+        // We want to append any options to what we already have
+      , newState = { availableOptions: new Object(this.state.availableOptions) }
+      ;
 
     for (let group in this.props.groups) {
       // If the group doesn't exist we initialize it

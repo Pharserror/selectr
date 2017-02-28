@@ -95,6 +95,10 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	    _this.USER_DEFINED = {
 	      FUNCTIONS: {
+	        appendFetchedOptions: null,
+	        filterOptions: null,
+	        hideOptionsList: null,
+	        loadMoreOptions: null,
 	        onBlur: null,
 	        onChange: null,
 	        onKeyDown: null,
@@ -146,7 +150,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      if (!!this.props.initialValue) {
 	        newState.selectedOptions = Array.from(this.props.initialValue);
 	      }
-	      if (!!this.props.options) {
+	      if (!!this.props.options && this.props.options.length > 0) {
 	        this.appendFetchedOptions(this.props.options);
 	      }
 
@@ -174,12 +178,18 @@ return /******/ (function(modules) { // webpackBootstrap
 	    value: function appendFetchedOptions(options) {
 	      var _this3 = this;
 
-	      var availableOptionsValues = [];
-	      var callback = options.callback || !!this.props.async ? this.setState.bind(this, { page: this.state.page + 1 }) : function () {
-	        return;
-	      };
+	      var availableOptionsValues = []
+	      // TODO: Not sure what this is for
+	      // , callback =
+	      //   options.callback ||
+	      //   !!this.props.async
+	      //   ? this.setState.bind(
+	      //     this,
+	      //     { page: this.state.page + 1 }
+	      //   ) : (() => { return; })
 	      // We want to append any options to what we already have
-	      var newState = { availableOptions: new Object(this.state.availableOptions) };
+	      ,
+	          newState = { availableOptions: new Object(this.state.availableOptions) };
 
 	      for (var group in this.props.groups) {
 	        // If the group doesn't exist we initialize it
