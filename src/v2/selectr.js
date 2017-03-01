@@ -687,21 +687,23 @@ export default class Selectr extends Component {
   }
 
   selectOption(option) {
-    let newState = { currentUserInput: '' };
+    const newState = {
+        currentUserInput: '',
+        selectedOptions: (
+          this.props.multiple
+          ? Array.from(this.state.selectedOptions).concat(option)
+          : [option]
+        )
+    };
 
-    if (this.props.multiple) {
-      newState.selectedOptions = Array.from(this.state.selectedOptions);
-      newState.selectedOptions = newState.selectedOptions.concat(option);
-      newState.currentlySelectedInputOption = this.state.selectedOptions.length;
-    } else if (!!this.state.selectedOptions[0]) {
-      this.removeSelectedOption(this.state.selectedOptions[0]);
-      newState.selectedOptions = [option];
-      newState.currentlySelectedInputOption = 0;
-    }
+    newState.currentlySelectedInputOption = this.state.selectedOptions.length;
 
     this.setState(newState, () => {
       this.refs.selectrInput.focus();
       this.filterOptions(undefined, this.state.currentUserInput);
+      if (!this.props.multiple) {
+        this.removeSelectedOption(this.state.selectedOptions[0]);
+      }
     });
   }
 
