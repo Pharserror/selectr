@@ -761,18 +761,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	      var _this8 = this;
 
 	      var newState = {
+	        currentlySelectedInputOption: this.state.selectedOptions.length,
 	        currentUserInput: '',
 	        selectedOptions: this.props.multiple ? Array.from(this.state.selectedOptions).concat(option) : [option]
 	      };
 
-	      newState.currentlySelectedInputOption = this.state.selectedOptions.length;
-
 	      this.setState(newState, function () {
 	        _this8.refs.selectrInput.focus();
 	        _this8.filterOptions(undefined, _this8.state.currentUserInput);
-	        if (!_this8.props.multiple) {
-	          _this8.removeSelectedOption(_this8.state.selectedOptions[0]);
-	        }
 	      });
 	    }
 	  }, {
