@@ -340,7 +340,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	          };
 	          if (!!selectedOption.isNew) {
 	            newState.currentUserInput = selectedOption.value;
-	            this.refs.input.value = newState.currentUserInput;
+	            this.refs.selectrInput.value = newState.currentUserInput;
 	          }
 	          this.setState(newState, this.removeSelectedOption.bind(this, selectedOption));
 	        }
@@ -366,7 +366,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    key: 'onEnterTab',
 	    value: function onEnterTab(event) {
 	      event.preventDefault();
-	      this.refs.input.value = '';
+	      this.refs.selectrInput.value = '';
 
 	      if (!!this.state.filteredOptions[this.state.currentlySelectedListOption] && this.state.currentUserInput === '') {
 
@@ -382,11 +382,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	          availableOptions: new Object(this.state.availableOptions),
 	          currentlySelectedInputOption: this.state.selectedOptions.length,
 	          currentUserInput: '',
-	          selectedOptions: Array.from(this.state.selectedOptions)
+	          selectedOptions: this.props.multiple ? Array.from(this.state.selectedOptions).concat(newOption) : [newOption]
 	        };
 
+	        // TODO: potentially need to remove this option from the availableOptions
+	        // list if a user deletes it
 	        newState.availableOptions[this.props.defaultGroupKey].nodes.push(newOption);
-	        newState.selectedOptions.push(newOption);
 	        this.setState(newState, this.filterOptions.bind(this, null, ''));
 	      }
 	    }
@@ -759,21 +760,19 @@ return /******/ (function(modules) { // webpackBootstrap
 	    value: function selectOption(option) {
 	      var _this8 = this;
 
-	      var newState = { currentUserInput: '' };
+	      var newState = {
+	        currentUserInput: '',
+	        selectedOptions: this.props.multiple ? Array.from(this.state.selectedOptions).concat(option) : [option]
+	      };
 
-	      if (this.props.multiple) {
-	        newState.selectedOptions = Array.from(this.state.selectedOptions);
-	        newState.selectedOptions = newState.selectedOptions.concat(option);
-	        newState.currentlySelectedInputOption = this.state.selectedOptions.length;
-	      } else if (!!this.state.selectedOptions[0]) {
-	        this.removeSelectedOption(this.state.selectedOptions[0]);
-	        newState.selectedOptions = [option];
-	        newState.currentlySelectedInputOption = 0;
-	      }
+	      newState.currentlySelectedInputOption = this.state.selectedOptions.length;
 
 	      this.setState(newState, function () {
-	        _this8.refs.input.focus();
+	        _this8.refs.selectrInput.focus();
 	        _this8.filterOptions(undefined, _this8.state.currentUserInput);
+	        if (!_this8.props.multiple) {
+	          _this8.removeSelectedOption(_this8.state.selectedOptions[0]);
+	        }
 	      });
 	    }
 	  }, {
@@ -833,12 +832,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	              'li',
 	              null,
 	              _react2.default.createElement('input', {
+	                className: this.props.inputClasses,
+	                name: this.props.inputName,
 	                onChange: this.onChange,
 	                onBlur: this.onBlur,
 	                onFocus: this.toggleOptionsList,
 	                onKeyDown: this.onKeyDown,
 	                placeholder: this.props.placeholder,
-	                ref: 'input',
+	                ref: this.props.inputRef,
 	                type: 'text'
 	              })
 	            )
@@ -870,6 +871,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	  groups: _react.PropTypes.object,
 	  infiniteScrolling: _react.PropTypes.bool,
 	  initialValue: _react.PropTypes.array,
+	  inputClasses: _react.PropTypes.string,
+	  inputName: _react.PropTypes.string,
+	  inputRef: _react.PropTypes.string,
 	  inputWrapperClass: _react.PropTypes.string,
 	  isSubmitAsync: _react.PropTypes.bool,
 	  manualAJAXPrompt: _react.PropTypes.string,
@@ -909,6 +913,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  groups: { default: { label: '', nodes: [] } },
 	  infiniteScrolling: false,
 	  initialValue: [],
+	  inputRef: 'selectrInput',
 	  inputWrapperClass: '',
 	  isSubmitAsync: true,
 	  manualAJAXPrompt: 'Load more options',
@@ -974,7 +979,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 	// module
-	exports.push([module.id, ".gmail-select .invisible-screen {\n  display: none; }\n  .gmail-select .invisible-screen.active {\n    background: transparent;\n    display: block;\n    position: absolute;\n    z-index: 9997; }\n\n.gmail-select .options-list-container ul {\n  background-attachment: initial;\n  background-color: #FFF;\n  background-image: none;\n  background-position: initial;\n  background-repeat: initial;\n  display: none;\n  margin: 0 0 0 0;\n  max-height: 300px;\n  overflow-y: scroll;\n  padding: 0 0 0 0;\n  position: absolute;\n  z-index: 9998; }\n  .gmail-select .options-list-container ul.active {\n    border-bottom: 1px solid #CCC;\n    border-bottom-left-radius: 4px;\n    border-bottom-right-radius: 4px;\n    border-left: 1px solid #CCC;\n    border-right: 1px solid #CCC;\n    border-top: none;\n    display: block; }\n  .gmail-select .options-list-container ul li {\n    padding: 10px 0 10px 10px; }\n    .gmail-select .options-list-container ul li.active, .gmail-select .options-list-container ul li:hover {\n      background-color: LightBlue; }\n    .gmail-select .options-list-container ul li.ajax-spinner-list-item, .gmail-select .options-list-container ul li.list-item-option-group, .gmail-select .options-list-container ul li.no-more-options-list-item {\n      text-align: left; }\n      .gmail-select .options-list-container ul li.ajax-spinner-list-item:hover, .gmail-select .options-list-container ul li.list-item-option-group:hover, .gmail-select .options-list-container ul li.no-more-options-list-item:hover {\n        background-color: transparent; }\n    .gmail-select .options-list-container ul li .ajax-spinner {\n      height: 20px;\n      width: 20px; }\n\n.gmail-select .input-container ul, .gmail-select .options-list-container ul {\n  list-style: none;\n  padding-left: 0; }\n\n.gmail-select .input-container {\n  border-bottom-left-radius: 4px;\n  border-bottom-right-radius: 4px;\n  border-top-left-radius: 4px;\n  border-top-right-radius: 4px;\n  border-color: #CCC;\n  border-style: solid;\n  border-width: 1px; }\n  .gmail-select .input-container.active {\n    border-bottom-left-radius: 0px;\n    border-bottom-right-radius: 0px;\n    position: relative;\n    z-index: 9999; }\n  .gmail-select .input-container input {\n    border: none;\n    outline: none;\n    width: 333px; }\n  .gmail-select .input-container ul {\n    margin: 0 0 5px 10px; }\n    .gmail-select .input-container ul li {\n      background-attachment: initial;\n      background-color: #CCC;\n      background-image: none;\n      background-position: initial;\n      background-repeat: initial;\n      border-bottom-left-radius: 4px;\n      border-bottom-right-radius: 4px;\n      border-top-left-radius: 4px;\n      border-top-right-radius: 4px;\n      border-color: #AAA;\n      border-style: solid;\n      border-width: 1px;\n      display: inline-block;\n      margin-right: 10px;\n      margin-top: 5px;\n      padding-right: 10px; }\n      .gmail-select .input-container ul li:last-child {\n        background-color: transparent;\n        border: none;\n        padding-right: 0px; }\n      .gmail-select .input-container ul li .close-icon {\n        border-right: 1px solid #AAA;\n        color: #AAA;\n        display: inline-block;\n        height: 20px;\n        margin-right: 10px;\n        text-align: center;\n        text-decoration: none;\n        width: 20px; }\n        .gmail-select .input-container ul li .close-icon:hover {\n          background-color: #999; }\n      .gmail-select .input-container ul li span {\n        padding-left: 5px; }\n\n.hidden {\n  display: none; }\n", ""]);
+	exports.push([module.id, ".gmail-select .invisible-screen {\n  display: none; }\n  .gmail-select .invisible-screen.active {\n    background: transparent;\n    display: block;\n    position: absolute;\n    z-index: 9997; }\n\n.gmail-select .options-list-container ul {\n  background-attachment: initial;\n  background-color: #FFF;\n  background-image: none;\n  background-position: initial;\n  background-repeat: initial;\n  display: none;\n  margin: 0 0 0 0;\n  max-height: 300px;\n  overflow-y: scroll;\n  padding: 0 0 0 0;\n  position: absolute;\n  z-index: 9998; }\n  .gmail-select .options-list-container ul.active {\n    border-bottom: 1px solid #CCC;\n    border-bottom-left-radius: 4px;\n    border-bottom-right-radius: 4px;\n    border-left: 1px solid #CCC;\n    border-right: 1px solid #CCC;\n    border-top: none;\n    display: block; }\n  .gmail-select .options-list-container ul li {\n    padding: 10px 0 10px 10px; }\n    .gmail-select .options-list-container ul li.active, .gmail-select .options-list-container ul li:hover {\n      background-color: LightBlue; }\n    .gmail-select .options-list-container ul li.ajax-spinner-list-item, .gmail-select .options-list-container ul li.list-item-option-group, .gmail-select .options-list-container ul li.no-more-options-list-item {\n      text-align: left; }\n      .gmail-select .options-list-container ul li.ajax-spinner-list-item:hover, .gmail-select .options-list-container ul li.list-item-option-group:hover, .gmail-select .options-list-container ul li.no-more-options-list-item:hover {\n        background-color: transparent; }\n    .gmail-select .options-list-container ul li .ajax-spinner {\n      height: 20px;\n      width: 20px; }\n\n.gmail-select .input-container ul, .gmail-select .options-list-container ul {\n  list-style: none;\n  padding-left: 0; }\n\n.gmail-select .input-container {\n  background-color: #FFF;\n  border-bottom-left-radius: 4px;\n  border-bottom-right-radius: 4px;\n  border-top-left-radius: 4px;\n  border-top-right-radius: 4px;\n  border-color: #CCC;\n  border-style: solid;\n  border-width: 1px; }\n  .gmail-select .input-container.active {\n    border-bottom-left-radius: 0px;\n    border-bottom-right-radius: 0px;\n    position: relative;\n    z-index: 9999; }\n  .gmail-select .input-container input {\n    border: none;\n    outline: none;\n    width: 333px; }\n  .gmail-select .input-container ul {\n    margin: 0 0 5px 10px; }\n    .gmail-select .input-container ul li {\n      background-attachment: initial;\n      background-color: #CCC;\n      background-image: none;\n      background-position: initial;\n      background-repeat: initial;\n      border-bottom-left-radius: 4px;\n      border-bottom-right-radius: 4px;\n      border-top-left-radius: 4px;\n      border-top-right-radius: 4px;\n      border-color: #AAA;\n      border-style: solid;\n      border-width: 1px;\n      display: inline-block;\n      margin-right: 10px;\n      margin-top: 5px;\n      padding-right: 10px; }\n      .gmail-select .input-container ul li:last-child {\n        background-color: transparent;\n        border: none;\n        padding-right: 0px; }\n      .gmail-select .input-container ul li .close-icon {\n        border-right: 1px solid #AAA;\n        color: #AAA;\n        display: inline-block;\n        height: 20px;\n        margin-right: 10px;\n        text-align: center;\n        text-decoration: none;\n        width: 20px; }\n        .gmail-select .input-container ul li .close-icon:hover {\n          background-color: #999; }\n      .gmail-select .input-container ul li span {\n        padding-left: 5px; }\n\n.hidden {\n  display: none; }\n", ""]);
 
 	// exports
 
