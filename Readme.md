@@ -34,7 +34,7 @@ Now,
 
 ### Known bugs
 - Selection at the end of the input with infiniteScrolling set to true will trigger another AJAX call to load more options. Solutions are to introduce a boolean prop to force the input to close after selection or scroll the list back to the top. A third, more state intensive option, would be to track if the bottom of the list had been reached and then an option had been selected and reset that onScroll.
-- Adding custom tags when multiple is set to false allows more than 1 tag - should be fixed with 2.0.12-alpha
+- On tab and enter for non-multiple selectrs a blank tag is being allowed
 
 ## Usage
 
