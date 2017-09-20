@@ -32,7 +32,7 @@ $(document).ready(function() {
       {
         async: generateRandomOptions,
         groups: { default: { label: 'TEST', nodes: [] } },
-        infiniteScrolling: true,
+        infiniteScrolling: false,
         options: options,
         rootParentId: 'root',
         initialValue: [options[0]],
