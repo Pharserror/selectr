@@ -1,0 +1,43 @@
+export function getDefaultProps() {
+  return {
+    AJAXSpinnerClasses:            'ajax-spinner',
+    AJAXSpinnerComponentFactory:   undefined,
+    AJAXSpinnerComponentProps:     {},
+    AJAXSpinnerListItemClasses:    '',
+    async:                         undefined,
+    closeIconFactory:              React.createFactory('em'),
+    closeIconClass:                '',
+    debounceTimeout:               500,
+    defaultGroupKey:               'default',
+    groups:                        { default: { label: '', nodes: [] } },
+    infiniteScrolling:             false,
+    initialValue:                  [],
+    inputWrapperClass:             '',
+    isSubmitAsync:                 true,
+    manualAJAXPrompt:              'Load more options',
+    multiple:                      false,
+    noMoreOptionsNotice:           'No more options available',
+    noMoreOptionsListItemClasses:  '',
+    onChange:                      function() { this.onChange(); },
+    options:                       [],
+    optionsListItemClass:          'list-item',
+    pageSize:                      10,
+    placeholder:                   'Please select from the dropdown or type to filter',
+    rootParentId:                  'root',
+    selectElementClass:            'hidden',
+    selectElementName:             '',
+    selectionFormatter:            this.selectionFormatter,
+    selectOptionsListWrapperClass: '',
+    shouldLogErrors:               false,
+    smartScroll:                   false,
+    spinnerImgPath:                '/images/loader.gif',
+    submitMethod:                  'POST',
+    submitPassword:                undefined,
+    submitSelection:               this.submitSelection,
+    submitUrl:                     'http://localhost:3000',
+    submitUser:                    undefined,
+    wrapperClass:                  ''
+  };
+}
+
+export default getDefaultProps()

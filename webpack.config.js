@@ -20,7 +20,7 @@ module.exports = {
         exclude: /node_modules/, // we expect our node modules to already be transpiled
         loader: 'babel',
         query: {
-          presets: ['react', 'es2015'] // we need to use this preset so that Babel doesn't choke on JSX syntax
+          presets: ['react', 'es2015', 'stage-0'] // we need to use this preset so that Babel doesn't choke on JSX syntax
         }
       },
       {
