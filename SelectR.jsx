@@ -99,6 +99,7 @@ export default class SelectR extends Component {
         nodes: Array.from(this.state.availableOptions)
       };
     }
+
     for (let group in groups) {
       nodes.push(
         <optgroup
@@ -109,6 +110,7 @@ export default class SelectR extends Component {
         </optgroup>
       );
     }
+
     return nodes;
   }
 

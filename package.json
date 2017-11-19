@@ -1,8 +1,8 @@
 {
-  "name": "SelectR",
-  "version": "0.1.1",
+  "name": "selectr",
+  "version": "2.0.14-alpha",
   "description": "A Select2 style input built in React",
-  "main": "SelectR.jsx",
+  "main": "dist/selectr.js",
   "author": "Adam Lind <sunboxnet@gmail.com>",
   "license": "MIT",
   "homepage": "https://bitbucket.org/pharserror/selectr#readme",
@@ -60,7 +60,6 @@
     "react-testutils-additions": "15.1.0",
     "sass-loader": "^4.0.0",
     "style-loader": "^0.13.1",
-    "webpack": "^1.12.4",
     "webpack-dev-middleware": "1.6.1"
   },
   "dependencies": {

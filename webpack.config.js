@@ -3,14 +3,17 @@ module.exports = {
   // entry is the file that renders our React app.
   entry: {
     selectr: [
-      './init.js'
+      './src/v2/selectr'
     ]
   },
   output: {
-    path: __dirname + '/app/assets/javascripts',
+    path: __dirname + '/dist',
     // filename is the name of the output file that will be compiled by Webpack
     filename: '[name].js',
-    publicPath: '/'
+    libraryTarget: 'umd',
+    library: 'selectr',
+    publicPath: '/',
+    umdNamedDefine: true
   },
   module: {
     // our loaders are our transpilers and interpreters such as Babel
@@ -27,11 +30,15 @@ module.exports = {
         test: /\.scss$/,
         loaders: ['style', 'css', 'sass']
       }
-    ]
+    ],
+    noParse: ['react']
   },
   resolve: {
     extensions: ['', '.js', '.jsx'],
     // modulesDirectories tells Webpack where stuff lives when we do require('some-module')
     modulesDirectories: ['node_modules']
+  },
+  externals: {
+    'react': 'umd react'
   }
 };
