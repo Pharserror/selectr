@@ -1,13 +1,13 @@
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
-		module.exports = factory(require("react"));
+		module.exports = factory(require("react"), require("prop-types"));
 	else if(typeof define === 'function' && define.amd)
-		define("selectr", ["react"], factory);
+		define("selectr", ["react", "prop-types"], factory);
 	else if(typeof exports === 'object')
-		exports["selectr"] = factory(require("react"));
+		exports["selectr"] = factory(require("react"), require("prop-types"));
 	else
-		root["selectr"] = factory(root["react"]);
-})(window, function(__WEBPACK_EXTERNAL_MODULE__7__) {
+		root["selectr"] = factory(root["react"], root["prop-types"]);
+})(window, function(__WEBPACK_EXTERNAL_MODULE__7__, __WEBPACK_EXTERNAL_MODULE__9__) {
 return /******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
 /******/ 	var installedModules = {};
@@ -110,6 +110,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Selectr; });
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(7);
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _propTypes__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(8);
 function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _nonIterableSpread(); }
@@ -137,6 +138,7 @@ function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || func
 function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
 
 __webpack_require__(2);
+
 
 
 
@@ -863,48 +865,7 @@ function (_Component) {
 }(react__WEBPACK_IMPORTED_MODULE_0__["Component"]);
 
 
-Selectr.propTypes = {
-  AJAXSpinnerClasses: react__WEBPACK_IMPORTED_MODULE_0__["PropTypes"].string,
-  AJAXSpinnerComponentFactory: react__WEBPACK_IMPORTED_MODULE_0__["PropTypes"].func,
-  AJAXSpinnerComponentProps: react__WEBPACK_IMPORTED_MODULE_0__["PropTypes"].object,
-  AJAXSpinnerListItemClasses: react__WEBPACK_IMPORTED_MODULE_0__["PropTypes"].string,
-  async: react__WEBPACK_IMPORTED_MODULE_0__["PropTypes"].func,
-  closeIconFactory: react__WEBPACK_IMPORTED_MODULE_0__["PropTypes"].func,
-  closeIconClass: react__WEBPACK_IMPORTED_MODULE_0__["PropTypes"].string,
-  debounceFunc: react__WEBPACK_IMPORTED_MODULE_0__["PropTypes"].func,
-  debounceTimeout: react__WEBPACK_IMPORTED_MODULE_0__["PropTypes"].number,
-  defaultGroupKey: react__WEBPACK_IMPORTED_MODULE_0__["PropTypes"].string,
-  groups: react__WEBPACK_IMPORTED_MODULE_0__["PropTypes"].object,
-  infiniteScrolling: react__WEBPACK_IMPORTED_MODULE_0__["PropTypes"].bool,
-  initialValue: react__WEBPACK_IMPORTED_MODULE_0__["PropTypes"].array,
-  inputClasses: react__WEBPACK_IMPORTED_MODULE_0__["PropTypes"].string,
-  inputName: react__WEBPACK_IMPORTED_MODULE_0__["PropTypes"].string,
-  inputRef: react__WEBPACK_IMPORTED_MODULE_0__["PropTypes"].string,
-  inputWrapperClass: react__WEBPACK_IMPORTED_MODULE_0__["PropTypes"].string,
-  isSubmitAsync: react__WEBPACK_IMPORTED_MODULE_0__["PropTypes"].bool,
-  manualAJAXPrompt: react__WEBPACK_IMPORTED_MODULE_0__["PropTypes"].string,
-  multiple: react__WEBPACK_IMPORTED_MODULE_0__["PropTypes"].bool,
-  noMoreOptionsNotice: react__WEBPACK_IMPORTED_MODULE_0__["PropTypes"].string,
-  noMoreOptionsListItemClasses: react__WEBPACK_IMPORTED_MODULE_0__["PropTypes"].string,
-  onChange: react__WEBPACK_IMPORTED_MODULE_0__["PropTypes"].func,
-  options: react__WEBPACK_IMPORTED_MODULE_0__["PropTypes"].array,
-  optionsListItemClass: react__WEBPACK_IMPORTED_MODULE_0__["PropTypes"].string,
-  pageSize: react__WEBPACK_IMPORTED_MODULE_0__["PropTypes"].number,
-  placeholder: react__WEBPACK_IMPORTED_MODULE_0__["PropTypes"].string,
-  rootParentId: react__WEBPACK_IMPORTED_MODULE_0__["PropTypes"].string,
-  selectElementClass: react__WEBPACK_IMPORTED_MODULE_0__["PropTypes"].string,
-  selectElementName: react__WEBPACK_IMPORTED_MODULE_0__["PropTypes"].string,
-  selectionFormatter: react__WEBPACK_IMPORTED_MODULE_0__["PropTypes"].func,
-  selectOptionsListWrapperClass: react__WEBPACK_IMPORTED_MODULE_0__["PropTypes"].string,
-  shouldLogErrors: react__WEBPACK_IMPORTED_MODULE_0__["PropTypes"].bool,
-  spinnerImgPath: react__WEBPACK_IMPORTED_MODULE_0__["PropTypes"].string,
-  submitMethod: react__WEBPACK_IMPORTED_MODULE_0__["PropTypes"].string,
-  submitPassword: react__WEBPACK_IMPORTED_MODULE_0__["PropTypes"].string,
-  submitSelection: react__WEBPACK_IMPORTED_MODULE_0__["PropTypes"].func,
-  submitUrl: react__WEBPACK_IMPORTED_MODULE_0__["PropTypes"].string,
-  submitUser: react__WEBPACK_IMPORTED_MODULE_0__["PropTypes"].string,
-  wrapperClass: react__WEBPACK_IMPORTED_MODULE_0__["PropTypes"].string
-};
+Selectr.propTypes = _propTypes__WEBPACK_IMPORTED_MODULE_1__["default"];
 Selectr.defaultProps = {
   AJAXSpinnerClasses: 'ajax-spinner',
   AJAXSpinnerComponentFactory: undefined,
@@ -1549,6 +1510,68 @@ module.exports = function (css) {
 /***/ (function(module, exports) {
 
 module.exports = __WEBPACK_EXTERNAL_MODULE__7__;
+
+/***/ }),
+/* 8 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var prop_types__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(9);
+/* harmony import */ var prop_types__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(prop_types__WEBPACK_IMPORTED_MODULE_0__);
+
+var array = prop_types__WEBPACK_IMPORTED_MODULE_0___default.a.array,
+    bool = prop_types__WEBPACK_IMPORTED_MODULE_0___default.a.bool,
+    func = prop_types__WEBPACK_IMPORTED_MODULE_0___default.a.func,
+    number = prop_types__WEBPACK_IMPORTED_MODULE_0___default.a.number,
+    object = prop_types__WEBPACK_IMPORTED_MODULE_0___default.a.object,
+    string = prop_types__WEBPACK_IMPORTED_MODULE_0___default.a.string;
+var propTypes = {
+  AJAXSpinnerClasses: string,
+  AJAXSpinnerComponentFactory: func,
+  AJAXSpinnerComponentProps: object,
+  AJAXSpinnerListItemClasses: string,
+  async: func,
+  closeIconFactory: func,
+  closeIconClass: string,
+  debounceFunc: func,
+  debounceTimeout: number,
+  defaultGroupKey: string,
+  groups: object,
+  infiniteScrolling: bool,
+  initialValue: array,
+  inputWrapperClass: string,
+  isSubmitAsync: bool,
+  manualAJAXPrompt: string,
+  multiple: bool,
+  noMoreOptionsNotice: string,
+  noMoreOptionsListItemClasses: string,
+  onChange: func,
+  options: array,
+  optionsListItemClass: string,
+  pageSize: number,
+  placeholder: string,
+  rootParentId: string,
+  selectElementClass: string,
+  selectElementName: string,
+  selectionFormatter: func,
+  selectOptionsListWrapperClass: string,
+  shouldLogErrors: bool,
+  spinnerImgPath: string,
+  submitMethod: string,
+  submitPassword: string,
+  submitSelection: func,
+  submitUrl: string,
+  submitUser: string,
+  wrapperClass: string
+};
+/* harmony default export */ __webpack_exports__["default"] = (propTypes);
+
+/***/ }),
+/* 9 */
+/***/ (function(module, exports) {
+
+module.exports = __WEBPACK_EXTERNAL_MODULE__9__;
 
 /***/ })
 /******/ ]);

@@ -1,5 +1,6 @@
 require('../../selectr.scss');
-import React, { Component, PropTypes } from 'react';
+import React, { Component } from 'react';
+import propTypes from '../propTypes';
 
 export default class Selectr extends Component {
   constructor(props) {
@@ -775,48 +776,7 @@ export default class Selectr extends Component {
   }
 }
 
-Selectr.propTypes = {
-  AJAXSpinnerClasses:            PropTypes.string,
-  AJAXSpinnerComponentFactory:   PropTypes.func,
-  AJAXSpinnerComponentProps:     PropTypes.object,
-  AJAXSpinnerListItemClasses:    PropTypes.string,
-  async:                         PropTypes.func,
-  closeIconFactory:              PropTypes.func,
-  closeIconClass:                PropTypes.string,
-  debounceFunc:                  PropTypes.func,
-  debounceTimeout:               PropTypes.number,
-  defaultGroupKey:               PropTypes.string,
-  groups:                        PropTypes.object,
-  infiniteScrolling:             PropTypes.bool,
-  initialValue:                  PropTypes.array,
-  inputClasses:                  PropTypes.string,
-  inputName:                     PropTypes.string,
-  inputRef:                      PropTypes.string,
-  inputWrapperClass:             PropTypes.string,
-  isSubmitAsync:                 PropTypes.bool,
-  manualAJAXPrompt:              PropTypes.string,
-  multiple:                      PropTypes.bool,
-  noMoreOptionsNotice:           PropTypes.string,
-  noMoreOptionsListItemClasses:  PropTypes.string,
-  onChange:                      PropTypes.func,
-  options:                       PropTypes.array,
-  optionsListItemClass:          PropTypes.string,
-  pageSize:                      PropTypes.number,
-  placeholder:                   PropTypes.string,
-  rootParentId:                  PropTypes.string,
-  selectElementClass:            PropTypes.string,
-  selectElementName:             PropTypes.string,
-  selectionFormatter:            PropTypes.func,
-  selectOptionsListWrapperClass: PropTypes.string,
-  shouldLogErrors:               PropTypes.bool,
-  spinnerImgPath:                PropTypes.string,
-  submitMethod:                  PropTypes.string,
-  submitPassword:                PropTypes.string,
-  submitSelection:               PropTypes.func,
-  submitUrl:                     PropTypes.string,
-  submitUser:                    PropTypes.string,
-  wrapperClass:                  PropTypes.string
-};
+Selectr.propTypes = propTypes;
 
 Selectr.defaultProps = {
   AJAXSpinnerClasses:            'ajax-spinner',

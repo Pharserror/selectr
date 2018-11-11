@@ -1,6 +1,6 @@
 {
   "name": "selectr",
-  "version": "2.0.15-alpha",
+  "version": "2.0.16-alpha",
   "description": "A Select2 style input built in React",
   "main": "dist/selectr.js",
   "author": "Adam Lind <sunboxnet@gmail.com>",
@@ -45,6 +45,7 @@
     "history": "4.2.0"
   },
   "peerDependencies": {
+    "prop-types": "15.6.2",
     "react": "^16.5.2",
     "react-dom": "^16.5.2"
   }
