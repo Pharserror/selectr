@@ -22,6 +22,7 @@ const propTypes = {
   noMoreOptionsNotice:           string,
   noMoreOptionsListItemClasses:  string,
   onChange:                      func,
+  onSelectOption:                func,
   options:                       array,
   optionsListItemClass:          string,
   pageSize:                      number,

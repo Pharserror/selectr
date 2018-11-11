@@ -702,6 +702,8 @@ export default class Selectr extends Component {
       this.refs.selectrInput.focus();
       this.filterOptions(undefined, this.state.currentUserInput);
     });
+
+    this.props.onSelectOption(option);
   }
 
   submitSelection(selection) {
@@ -798,6 +800,8 @@ Selectr.defaultProps = {
   multiple:                      false,
   noMoreOptionsNotice:           'No more options available',
   noMoreOptionsListItemClasses:  '',
+  onChange:                      () => false,
+  onSelectOption:                () => false,
   options:                       [],
   optionsListItemClass:          'list-item',
   pageSize:                      10,

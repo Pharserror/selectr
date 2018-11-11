@@ -807,6 +807,7 @@ function (_Component) {
 
         _this8.filterOptions(undefined, _this8.state.currentUserInput);
       });
+      this.props.onSelectOption(option);
     }
   }, {
     key: "submitSelection",
@@ -891,6 +892,12 @@ Selectr.defaultProps = {
   multiple: false,
   noMoreOptionsNotice: 'No more options available',
   noMoreOptionsListItemClasses: '',
+  onChange: function onChange() {
+    return false;
+  },
+  onSelectOption: function onSelectOption() {
+    return false;
+  },
   options: [],
   optionsListItemClass: 'list-item',
   pageSize: 10,
@@ -1547,6 +1554,7 @@ var propTypes = {
   noMoreOptionsNotice: string,
   noMoreOptionsListItemClasses: string,
   onChange: func,
+  onSelectOption: func,
   options: array,
   optionsListItemClass: string,
   pageSize: number,
