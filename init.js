@@ -1,5 +1,4 @@
 require('./selectr.scss');
-var $ = require('jquery');
 var React = require('react');
 var ReactDOM = require('react-dom');
 var SelectR = require('./SelectR.jsx');
@@ -24,7 +23,7 @@ function generateRandomOptions(callback, page, currentUserInput) {
     return options;
   }
 }
-$(document).ready(function() {
+document.addEventListener('DOMContentLoaded', function () {
   var options = generateRandomOptions();
   ReactDOM.render(
     React.createElement(

@@ -1,44 +1,33 @@
 module.exports = {
-  context: __dirname, // we just want to use $cwd
-  // entry is the file that renders our React app.
+  context: __dirname,
   entry: {
     selectr: [
       './src/v2/selectr'
     ]
   },
+  externals: {
+    'react': 'umd react',
+    'react-dom': 'umd react-dom'
+  },
+  mode: 'none',
+  module: {
+    rules: [{
+      test: /\.jsx?$/,
+      loader: 'babel-loader'
+    }, {
+      test: /\.scss$/,
+      loaders: ['style-loader', 'css-loader', 'sass-loader']
+    }]
+  },
   output: {
     path: __dirname + '/dist',
-    // filename is the name of the output file that will be compiled by Webpack
     filename: '[name].js',
     libraryTarget: 'umd',
     library: 'selectr',
     publicPath: '/',
     umdNamedDefine: true
   },
-  module: {
-    // our loaders are our transpilers and interpreters such as Babel
-    loaders: [
-      {
-        test: /\.jsx?$/, // we tell babel to look for js and jsx files
-        exclude: /node_modules/, // we expect our node modules to already be transpiled
-        loader: 'babel',
-        query: {
-          presets: ['react', 'es2015', 'stage-0'] // we need to use this preset so that Babel doesn't choke on JSX syntax
-        }
-      },
-      {
-        test: /\.scss$/,
-        loaders: ['style', 'css', 'sass']
-      }
-    ],
-    noParse: ['react']
-  },
   resolve: {
-    extensions: ['', '.js', '.jsx'],
-    // modulesDirectories tells Webpack where stuff lives when we do require('some-module')
-    modulesDirectories: ['node_modules']
-  },
-  externals: {
-    'react': 'umd react'
+    extensions: ['.js', '.jsx']
   }
 };
