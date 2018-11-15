@@ -397,7 +397,7 @@ function (_Component) {
       if (!this.state.isAJAXing) {
         this.setState({
           isAJAXing: true,
-          page: this.state.page
+          page: this.state.page + 1
         }, function () {
           _this4.props.async(_this4.appendFetchedOptions, _this4.state.page, _this4.state.currentUserInput); // The spinner should be showing now so we want the user to see it
 
@@ -472,36 +472,53 @@ function (_Component) {
     value: function onKeyDown(event) {
       switch (event.keyCode) {
         case 8:
-          // backspace
-          this.onBackspace(event);
-          break;
+          {
+            // backspace
+            this.onBackspace(event);
+            break;
+          }
 
         case 13: // enter
 
         case 9:
-          // tab
-          this.onEnterTab(event);
-          break;
+          {
+            // tab
+            this.onEnterTab(event);
+            break;
+          }
 
         case 37:
-          // arrow left
-          this.moveCursor('left');
-          break;
+          {
+            // arrow left
+            this.moveCursor('left');
+            break;
+          }
 
         case 38:
-          // arrow up
-          this.selectFromList('prev');
-          break;
+          {
+            // arrow up
+            this.selectFromList('prev');
+            break;
+          }
 
         case 39:
-          // arrow right
-          this.moveCursor('right');
-          break;
+          {
+            // arrow right
+            this.moveCursor('right');
+            break;
+          }
 
         case 40:
-          // arrow down
-          this.selectFromList('next');
-          break;
+          {
+            // arrow down
+            this.selectFromList('next');
+            break;
+          }
+
+        default:
+          {
+            this.onChange(event);
+          }
       }
     }
   }, {
@@ -858,7 +875,6 @@ function (_Component) {
       }, this.renderSelectedOptionTags(), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("li", null, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("input", {
         className: this.props.inputClasses,
         name: this.props.inputName,
-        onChange: this.onChange,
         onBlur: this.onBlur,
         onFocus: this.toggleOptionsList,
         onKeyDown: this.onKeyDown,

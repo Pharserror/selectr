@@ -273,7 +273,7 @@ export default class Selectr extends Component {
     if (!this.state.isAJAXing) {
       this.setState({
         isAJAXing: true,
-        page: this.state.page
+        page: this.state.page + 1
       }, () => {
         this.props.async(
           this.appendFetchedOptions,
@@ -359,25 +359,34 @@ export default class Selectr extends Component {
 
   onKeyDown(event) {
     switch (event.keyCode) {
-      case 8: // backspace
+      case 8: { // backspace
         this.onBackspace(event);
         break;
+      }
       case 13: // enter
-      case 9: // tab
+      case 9: { // tab
         this.onEnterTab(event);
         break;
-      case 37: // arrow left
+      }
+      case 37: { // arrow left
         this.moveCursor('left');
         break;
-      case 38: // arrow up
+      }
+      case 38: { // arrow up
         this.selectFromList('prev');
         break;
-      case 39: // arrow right
+      }
+      case 39: { // arrow right
         this.moveCursor('right');
         break;
-      case 40: // arrow down
+      }
+      case 40: { // arrow down
         this.selectFromList('next');
         break;
+      }
+      default: {
+        this.onChange(event);
+      }
     }
   }
 
@@ -795,7 +804,6 @@ export default class Selectr extends Component {
               <input
                 className={this.props.inputClasses}
                 name={this.props.inputName}
-                onChange={this.onChange}
                 onBlur={this.onBlur}
                 onFocus={this.toggleOptionsList}
                 onKeyDown={this.onKeyDown}
