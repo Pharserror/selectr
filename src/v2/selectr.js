@@ -6,6 +6,34 @@ export default class Selectr extends Component {
   constructor(props) {
     super(props);
 
+    this.SYSTEM_DEFINED = {
+      FUNCTIONS: [
+        'computeOptionsListWidth',
+        'debounceFunc',
+        'dispatcher',
+        'getAJAXSpinnerComponent',
+        'isBottomOfListVisible',
+        'handleSubmitResponse',
+        'onBackspace',
+        'onEnterTab',
+        'onScroll',
+        'onSubmit',
+        'onWindowResize',
+        'populateSelectGroups',
+        'populateSelectGroupWithOptions',
+        'removeSelectedOption',
+        'renderInvisibleScreenNode',
+        'renderLoadMoreOptionsOption',
+        'renderOptionsForList',
+        'renderOptionsList',
+        'renderOptionsListContainer',
+        'renderSelectedOptionTags',
+        'scrollActiveListItemIntoView',
+        'selectFromList',
+        'selectOption'
+      ]
+    };
+
     this.USER_DEFINED = {
       FUNCTIONS: {
         appendFetchedOptions: null,
@@ -34,6 +62,10 @@ export default class Selectr extends Component {
         )
       );
     }
+
+    this.SYSTEM_DEFINED.FUNCTIONS.forEach(func => {
+      this[func] = this[func].bind(this);
+    }, this);
 
     this.state = {
       availableOptions:             { default: { label: '', nodes: [] } },
@@ -90,7 +122,7 @@ export default class Selectr extends Component {
   }
 
   appendFetchedOptions(options) {
-    let availableOptionsValues = []
+    let availableOptionsValues = [];
       // TODO: Not sure what this is for
       // , callback =
       //   options.callback ||
@@ -100,8 +132,7 @@ export default class Selectr extends Component {
       //     { page: this.state.page + 1 }
       //   ) : (() => { return; })
         // We want to append any options to what we already have
-      , newState = { availableOptions: new Object(this.state.availableOptions) }
-      ;
+    let newState = { availableOptions: new Object(this.state.availableOptions) };
 
     for (let group in this.props.groups) {
       // If the group doesn't exist we initialize it
@@ -123,6 +154,7 @@ export default class Selectr extends Component {
     });
     options.forEach(option => {
       let optionGroup = option.group || this.props.defaultGroupKey;
+
       if (!!newState.availableOptions[optionGroup]) {
         newState.availableOptions[optionGroup].nodes.push(option);
       }
@@ -137,6 +169,7 @@ export default class Selectr extends Component {
   computeOptionsListWidth() {
     // We need to account for any border on the options list
     let optionsListStyle = window.getComputedStyle(this.refs.optionsList);
+
     return (
       (this.refs.componentWrapper.clientWidth
       - parseInt(optionsListStyle.borderLeftWidth)
@@ -146,8 +179,8 @@ export default class Selectr extends Component {
   }
 
   debounceFunc(func, time) {
-    time = time || this.props.debounceTimeout;
     let timeout;
+    time = time || this.props.debounceTimeout;
 
     return () => {
       clearTimeout(timeout);
@@ -165,16 +198,14 @@ export default class Selectr extends Component {
   }
 
   filterOptions(event, filter) {
-      let filterExp = (
-        !!event
-        ? new RegExp(this.state.currentUserInput)
-        : new RegExp(filter)
-      )
-      , selectedOptionsValues = this.state.selectedOptions.map((option, index, options) => {
-        return option.value;
-      })
-      , availableOptions = []
-      ;
+    let filterExp = (
+      !!event
+      ? new RegExp(this.state.currentUserInput)
+      : new RegExp(filter)
+    );
+
+    let selectedOptionsValues = this.state.selectedOptions.map(option => option.value);
+    let availableOptions = [];
 
     for (let group in this.props.groups) {
       this.state.availableOptions[group].nodes.forEach(option => {
@@ -225,14 +256,15 @@ export default class Selectr extends Component {
   }
 
   isBottomOfListVisible() {
-    let optionsList = this.refs.optionsList
+    let optionsList = this.refs.optionsList;
     // Should be equal to $options-list-max-height
-      , optionsListHeight = optionsList.clientHeight
-      , isVisible = (optionsListHeight > 0) &&
-                    ((optionsList.scrollHeight
-                    - optionsList.clientHeight)
-                     === optionsList.scrollTop)
-      ;
+    let optionsListHeight = optionsList.clientHeight;
+    let isVisible = (
+      (optionsListHeight > 0) &&
+        ((optionsList.scrollHeight
+          - optionsList.clientHeight)
+         === optionsList.scrollTop)
+    );
 
     return isVisible;
   }
@@ -257,14 +289,17 @@ export default class Selectr extends Component {
   onBackspace(event) {
     if (!event.target.value || event.target.value === '') {
       let selectedOption = this.state.selectedOptions[this.state.currentlySelectedInputOption];
+
       if (!!selectedOption) {
         let newState = {
           currentlySelectedInputOption: this.state.currentlySelectedInputOption - 1
         };
+
         if (!!selectedOption.isNew) {
           newState.currentUserInput = selectedOption.value;
           this.refs.selectrInput.value = newState.currentUserInput;
         }
+
         this.setState(
           newState,
           this.removeSelectedOption.bind(this, selectedOption)
@@ -291,27 +326,29 @@ export default class Selectr extends Component {
     event.preventDefault();
     this.refs.selectrInput.value = '';
 
-    if (!!this.state.filteredOptions[this.state.currentlySelectedListOption] &&
-        this.state.currentUserInput === '') {
-
+    if (
+      !!this.state.filteredOptions[this.state.currentlySelectedListOption] &&
+      this.state.currentUserInput === ''
+    ) {
       this.selectOption(this.state.filteredOptions[this.state.currentlySelectedListOption]);
     } else {
       let newOption = {
-          isNew: true,
-          label: this.state.currentUserInput,
-          value: this.state.currentUserInput,
-          group: this.props.defaultGroupKey
-        }
-        , newState = {
-          availableOptions: new Object(this.state.availableOptions),
-          currentlySelectedInputOption: this.state.selectedOptions.length,
-          currentUserInput: '',
-          selectedOptions: (
-            this.props.multiple
-            ? Array.from(this.state.selectedOptions).concat(newOption)
-            : [newOption]
-          )
-        };
+        isNew: true,
+        label: this.state.currentUserInput,
+        value: this.state.currentUserInput,
+        group: this.props.defaultGroupKey
+      };
+
+      let newState = {
+        availableOptions: new Object(this.state.availableOptions),
+        currentlySelectedInputOption: this.state.selectedOptions.length,
+        currentUserInput: '',
+        selectedOptions: (
+          this.props.multiple
+          ? Array.from(this.state.selectedOptions).concat(newOption)
+          : [newOption]
+        )
+      };
 
       // TODO: potentially need to remove this option from the availableOptions
       // list if a user deletes it
@@ -363,8 +400,8 @@ export default class Selectr extends Component {
   }
 
   populateSelectGroups() {
-    let groups
-      , nodes = [];
+    let groups;
+    let nodes = [];
 
     if (!!this.props.groups) {
       groups = new Object(this.props.groups);
@@ -392,10 +429,9 @@ export default class Selectr extends Component {
   }
 
   populateSelectGroupWithOptions(groupKey) {
-    let availableOptionsGroup = this.state.availableOptions[groupKey]
-      , nodes = []
-      , selectedOptionsValues = []
-      ;
+    let availableOptionsGroup = this.state.availableOptions[groupKey];
+    let nodes = [];
+    let selectedOptionsValues = [];
 
     if (!!availableOptionsGroup) {
       if (!!this.state.selectedOptions[0]) {
@@ -421,14 +457,14 @@ export default class Selectr extends Component {
   }
 
   removeSelectedOption(option) {
-    let selectedOptionIndex
-      , selectedOptionsValues
-      , removedOptionIndex
-      , newState = {
-        canLoadMoreOptions: true,
-        filteredOptions: Array.from(this.state.filteredOptions),
-        selectedOptions: Array.from(this.state.selectedOptions)
-      };
+    let selectedOptionIndex;
+    let selectedOptionsValues;
+    let removedOptionIndex;
+    let newState = {
+      canLoadMoreOptions: true,
+      filteredOptions: Array.from(this.state.filteredOptions),
+      selectedOptions: Array.from(this.state.selectedOptions)
+    };
 
     selectedOptionsValues = newState.selectedOptions.map(option => {
       return option.value;
@@ -447,14 +483,14 @@ export default class Selectr extends Component {
       });
     } else {
       newState.availableOptions = new Object(this.state.availableOptions);
-      let availableOptionIndex
-        , optionGroup = option.group || this.props.defaultGroupKey
-        , availableOptionsValues =
-          newState
-          .availableOptions[optionGroup]
-          .nodes
-          .map(option => { return option.value; })
-        ;
+      let availableOptionIndex;
+      let optionGroup = option.group || this.props.defaultGroupKey;
+      let availableOptionsValues = (
+        newState
+        .availableOptions[optionGroup]
+        .nodes
+        .map(option => option.value)
+      );
 
       availableOptionIndex = availableOptionsValues.indexOf(option.value);
       // New options get deleted
@@ -464,28 +500,29 @@ export default class Selectr extends Component {
   }
 
   renderInvisibleScreenNode() {
-    let documentRect
-      , invisibleScreenStyle = {}
-      , rootParentRect
-      ;
+    let documentRect;
+    let invisibleScreenStyle = {};
+    let rootParentRect;
 
     if (!this.state.isListHidden) {
       documentRect = document.documentElement.getBoundingClientRect();
 
       try {
-        rootParentRect =
+        rootParentRect = (
           document
           .getElementById(this.props.rootParentId)
           .getBoundingClientRect()
-        ;
+        );
       } catch (e) {}
       invisibleScreenStyle.height = documentRect.height + 'px';
       invisibleScreenStyle.width = documentRect.width + 'px';
+
       try {
         invisibleScreenStyle.left = (0 - rootParentRect.left) + 'px';
       } catch (e) {
         invisibleScreenStyle.left = 0;
       }
+
       try {
         invisibleScreenStyle.top = (0 - rootParentRect.top) + 'px';
       } catch (e) {
@@ -535,19 +572,17 @@ export default class Selectr extends Component {
   }
 
   renderOptionsForList() {
-    let i = 1
-      , groupedNodes = {}
-      , nodes = []
-      ;
+    let i = 1;
+    let groupedNodes = {};
+    let nodes = [];
 
     for (let group in this.props.groups) {
       groupedNodes[group] = [];
     }
 
     this.state.filteredOptions.forEach((option, index, options) => {
-      let isActive = this.state.currentlySelectedListOption === index
-        , optionGroup = option.group || this.props.defaultGroupKey
-        ;
+      let isActive = this.state.currentlySelectedListOption === index;
+      let optionGroup = option.group || this.props.defaultGroupKey;
 
       if (!groupedNodes[optionGroup]) {
         throw new Error("renderOptionsForList: data mismatch! An option has a group not passed to this.props.groups!");

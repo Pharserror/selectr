@@ -153,6 +153,9 @@ function (_Component) {
     _classCallCheck(this, Selectr);
 
     _this = _possibleConstructorReturn(this, _getPrototypeOf(Selectr).call(this, props));
+    _this.SYSTEM_DEFINED = {
+      FUNCTIONS: ['computeOptionsListWidth', 'debounceFunc', 'dispatcher', 'getAJAXSpinnerComponent', 'isBottomOfListVisible', 'handleSubmitResponse', 'onBackspace', 'onEnterTab', 'onScroll', 'onSubmit', 'onWindowResize', 'populateSelectGroups', 'populateSelectGroupWithOptions', 'removeSelectedOption', 'renderInvisibleScreenNode', 'renderLoadMoreOptionsOption', 'renderOptionsForList', 'renderOptionsList', 'renderOptionsListContainer', 'renderSelectedOptionTags', 'scrollActiveListItemIntoView', 'selectFromList', 'selectOption']
+    };
     _this.USER_DEFINED = {
       FUNCTIONS: {
         appendFetchedOptions: null,
@@ -173,6 +176,10 @@ function (_Component) {
 
       _this[funcName] = !!_this.props[funcName] ? !!_this.USER_DEFINED.FUNCTIONS[funcName] ? (_this$props$funcName = _this.props[funcName]).bind.apply(_this$props$funcName, [_assertThisInitialized(_assertThisInitialized(_this))].concat(_toConsumableArray(_this.USER_DEFINED.FUNCTIONS[funcName]))) : _this.props[funcName].bind(_assertThisInitialized(_assertThisInitialized(_this))) : !!_this.USER_DEFINED.FUNCTIONS[funcName] ? (_this$funcName = _this[funcName]).bind.apply(_this$funcName, [_assertThisInitialized(_assertThisInitialized(_this))].concat(_toConsumableArray(_this.USER_DEFINED.FUNCTIONS[funcName]))) : _this[funcName].bind(_assertThisInitialized(_assertThisInitialized(_this)));
     }
+
+    _this.SYSTEM_DEFINED.FUNCTIONS.forEach(function (func) {
+      _this[func] = _this[func].bind(_assertThisInitialized(_assertThisInitialized(_this)));
+    }, _assertThisInitialized(_assertThisInitialized(_this)));
 
     _this.state = {
       availableOptions: {
@@ -246,7 +253,7 @@ function (_Component) {
     value: function appendFetchedOptions(options) {
       var _this3 = this;
 
-      var availableOptionsValues = [] // TODO: Not sure what this is for
+      var availableOptionsValues = []; // TODO: Not sure what this is for
       // , callback =
       //   options.callback ||
       //   !!this.props.async
@@ -255,8 +262,8 @@ function (_Component) {
       //     { page: this.state.page + 1 }
       //   ) : (() => { return; })
       // We want to append any options to what we already have
-      ,
-          newState = {
+
+      var newState = {
         availableOptions: new Object(this.state.availableOptions)
       };
 
@@ -303,8 +310,8 @@ function (_Component) {
   }, {
     key: "debounceFunc",
     value: function debounceFunc(func, time) {
-      time = time || this.props.debounceTimeout;
       var timeout;
+      time = time || this.props.debounceTimeout;
       return function () {
         clearTimeout(timeout);
         timeout = setTimeout(func, time);
@@ -323,11 +330,11 @@ function (_Component) {
   }, {
     key: "filterOptions",
     value: function filterOptions(event, filter) {
-      var filterExp = !!event ? new RegExp(this.state.currentUserInput) : new RegExp(filter),
-          selectedOptionsValues = this.state.selectedOptions.map(function (option, index, options) {
+      var filterExp = !!event ? new RegExp(this.state.currentUserInput) : new RegExp(filter);
+      var selectedOptionsValues = this.state.selectedOptions.map(function (option) {
         return option.value;
-      }),
-          availableOptions = [];
+      });
+      var availableOptions = [];
 
       for (var group in this.props.groups) {
         this.state.availableOptions[group].nodes.forEach(function (option) {
@@ -376,10 +383,10 @@ function (_Component) {
   }, {
     key: "isBottomOfListVisible",
     value: function isBottomOfListVisible() {
-      var optionsList = this.refs.optionsList // Should be equal to $options-list-max-height
-      ,
-          optionsListHeight = optionsList.clientHeight,
-          isVisible = optionsListHeight > 0 && optionsList.scrollHeight - optionsList.clientHeight === optionsList.scrollTop;
+      var optionsList = this.refs.optionsList; // Should be equal to $options-list-max-height
+
+      var optionsListHeight = optionsList.clientHeight;
+      var isVisible = optionsListHeight > 0 && optionsList.scrollHeight - optionsList.clientHeight === optionsList.scrollTop;
       return isVisible;
     }
   }, {
@@ -447,8 +454,8 @@ function (_Component) {
           label: this.state.currentUserInput,
           value: this.state.currentUserInput,
           group: this.props.defaultGroupKey
-        },
-            newState = {
+        };
+        var newState = {
           availableOptions: new Object(this.state.availableOptions),
           currentlySelectedInputOption: this.state.selectedOptions.length,
           currentUserInput: '',
@@ -520,8 +527,8 @@ function (_Component) {
   }, {
     key: "populateSelectGroups",
     value: function populateSelectGroups() {
-      var groups,
-          nodes = [];
+      var groups;
+      var nodes = [];
 
       if (!!this.props.groups) {
         groups = new Object(this.props.groups);
@@ -545,9 +552,9 @@ function (_Component) {
   }, {
     key: "populateSelectGroupWithOptions",
     value: function populateSelectGroupWithOptions(groupKey) {
-      var availableOptionsGroup = this.state.availableOptions[groupKey],
-          nodes = [],
-          selectedOptionsValues = [];
+      var availableOptionsGroup = this.state.availableOptions[groupKey];
+      var nodes = [];
+      var selectedOptionsValues = [];
 
       if (!!availableOptionsGroup) {
         if (!!this.state.selectedOptions[0]) {
@@ -570,10 +577,10 @@ function (_Component) {
   }, {
     key: "removeSelectedOption",
     value: function removeSelectedOption(option) {
-      var selectedOptionIndex,
-          selectedOptionsValues,
-          removedOptionIndex,
-          newState = {
+      var selectedOptionIndex;
+      var selectedOptionsValues;
+      var removedOptionIndex;
+      var newState = {
         canLoadMoreOptions: true,
         filteredOptions: Array.from(this.state.filteredOptions),
         selectedOptions: Array.from(this.state.selectedOptions)
@@ -594,9 +601,9 @@ function (_Component) {
         });
       } else {
         newState.availableOptions = new Object(this.state.availableOptions);
-        var availableOptionIndex,
-            optionGroup = option.group || this.props.defaultGroupKey,
-            availableOptionsValues = newState.availableOptions[optionGroup].nodes.map(function (option) {
+        var availableOptionIndex;
+        var optionGroup = option.group || this.props.defaultGroupKey;
+        var availableOptionsValues = newState.availableOptions[optionGroup].nodes.map(function (option) {
           return option.value;
         });
         availableOptionIndex = availableOptionsValues.indexOf(option.value); // New options get deleted
@@ -609,9 +616,9 @@ function (_Component) {
   }, {
     key: "renderInvisibleScreenNode",
     value: function renderInvisibleScreenNode() {
-      var documentRect,
-          invisibleScreenStyle = {},
-          rootParentRect;
+      var documentRect;
+      var invisibleScreenStyle = {};
+      var rootParentRect;
 
       if (!this.state.isListHidden) {
         documentRect = document.documentElement.getBoundingClientRect();
@@ -667,17 +674,17 @@ function (_Component) {
     value: function renderOptionsForList() {
       var _this5 = this;
 
-      var i = 1,
-          groupedNodes = {},
-          nodes = [];
+      var i = 1;
+      var groupedNodes = {};
+      var nodes = [];
 
       for (var group in this.props.groups) {
         groupedNodes[group] = [];
       }
 
       this.state.filteredOptions.forEach(function (option, index, options) {
-        var isActive = _this5.state.currentlySelectedListOption === index,
-            optionGroup = option.group || _this5.props.defaultGroupKey;
+        var isActive = _this5.state.currentlySelectedListOption === index;
+        var optionGroup = option.group || _this5.props.defaultGroupKey;
 
         if (!groupedNodes[optionGroup]) {
           throw new Error("renderOptionsForList: data mismatch! An option has a group not passed to this.props.groups!");
