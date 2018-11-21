@@ -514,11 +514,6 @@ function (_Component) {
             this.selectFromList('next');
             break;
           }
-
-        default:
-          {
-            this.onChange(event);
-          }
       }
     }
   }, {
@@ -876,6 +871,7 @@ function (_Component) {
         className: this.props.inputClasses,
         name: this.props.inputName,
         onBlur: this.onBlur,
+        onChange: this.onChange,
         onFocus: this.toggleOptionsList,
         onKeyDown: this.onKeyDown,
         placeholder: this.props.placeholder,
@@ -915,12 +911,6 @@ Selectr.defaultProps = {
   multiple: false,
   noMoreOptionsNotice: 'No more options available',
   noMoreOptionsListItemClasses: '',
-  onChange: function onChange() {
-    return false;
-  },
-  onSelectOption: function onSelectOption() {
-    return false;
-  },
   options: [],
   optionsListItemClass: 'list-item',
   pageSize: 10,

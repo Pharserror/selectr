@@ -384,9 +384,6 @@ export default class Selectr extends Component {
         this.selectFromList('next');
         break;
       }
-      default: {
-        this.onChange(event);
-      }
     }
   }
 
@@ -805,6 +802,7 @@ export default class Selectr extends Component {
                 className={this.props.inputClasses}
                 name={this.props.inputName}
                 onBlur={this.onBlur}
+                onChange={this.onChange}
                 onFocus={this.toggleOptionsList}
                 onKeyDown={this.onKeyDown}
                 placeholder={this.props.placeholder}
@@ -843,8 +841,6 @@ Selectr.defaultProps = {
   multiple:                      false,
   noMoreOptionsNotice:           'No more options available',
   noMoreOptionsListItemClasses:  '',
-  onChange:                      () => false,
-  onSelectOption:                () => false,
   options:                       [],
   optionsListItemClass:          'list-item',
   pageSize:                      10,
