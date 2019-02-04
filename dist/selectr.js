@@ -296,6 +296,10 @@ function (_Component) {
       }, this);
       newState.canLoadMoreOptions = options.length === this.props.pageSize;
       newState.isAJAXing = false;
+      /* TODO: If this was working right then loadMoreOptions would not trigger
+       * again from onScroll after calling scrollIntoView from loadMoreOptions
+       */
+
       this.setState(newState, function () {
         _this3.filterOptions(null, _this3.state.currentUserInput);
       });
@@ -397,12 +401,12 @@ function (_Component) {
       if (!this.state.isAJAXing) {
         this.setState({
           isAJAXing: true,
-          page: this.state.page + 1
+          page: this.state.page
         }, function () {
           _this4.props.async(_this4.appendFetchedOptions, _this4.state.page, _this4.state.currentUserInput); // The spinner should be showing now so we want the user to see it
+          // TODO: scrolling causes the onScroll to trigger; need to
+          // this.refs.AJAXSpinner.scrollIntoView();
 
-
-          _this4.refs.AJAXSpinner.scrollIntoView();
         });
       }
     }
@@ -515,6 +519,8 @@ function (_Component) {
             break;
           }
       }
+
+      this.props.onKeyDown(event);
     }
   }, {
     key: "onScroll",

@@ -57,7 +57,7 @@ $ajax-spinner-width: 20px;
     &.active {
       background: transparent;
       display: block;
-      position: absolute;
+      position: fixed;
       z-index: $root-z-index - 2;
     }
   }

@@ -161,6 +161,9 @@ export default class Selectr extends Component {
     }, this);
     newState.canLoadMoreOptions = options.length === this.props.pageSize;
     newState.isAJAXing = false;
+    /* TODO: If this was working right then loadMoreOptions would not trigger
+     * again from onScroll after calling scrollIntoView from loadMoreOptions
+     */
     this.setState(newState, () => {
       this.filterOptions(null, this.state.currentUserInput);
     });
@@ -273,7 +276,7 @@ export default class Selectr extends Component {
     if (!this.state.isAJAXing) {
       this.setState({
         isAJAXing: true,
-        page: this.state.page + 1
+        page: this.state.page
       }, () => {
         this.props.async(
           this.appendFetchedOptions,
@@ -281,7 +284,8 @@ export default class Selectr extends Component {
           this.state.currentUserInput
         );
         // The spinner should be showing now so we want the user to see it
-        this.refs.AJAXSpinner.scrollIntoView();
+        // TODO: scrolling causes the onScroll to trigger; need to
+        // this.refs.AJAXSpinner.scrollIntoView();
       });
     }
   }
@@ -385,6 +389,8 @@ export default class Selectr extends Component {
         break;
       }
     }
+
+    this.props.onKeyDown(event);
   }
 
   onScroll() {
