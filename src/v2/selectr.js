@@ -321,9 +321,10 @@ export default class Selectr extends Component {
       currentUserInput: event.target.value,
       page: 1
     }, this.filterOptions.bind(this, event));
-    //if (!!this.props.onChange) {
-    //  this.props.onChange();
-    //}
+
+    if (!!this.props.onChange) {
+      this.props.onChange(event.target.value);
+    }
   }
 
   onEnterTab(event) {
