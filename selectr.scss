@@ -131,8 +131,9 @@ $ajax-spinner-width: 20px;
     input {
       border: none;
       outline: none;
-      width: $input-width;
+      max-width: $input-width;
     }
+
     ul {
       margin: $input-container-list-margin;
 

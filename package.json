@@ -1,6 +1,6 @@
 {
   "name": "selectr",
-  "version": "2.1.0",
+  "version": "2.1.1",
   "description": "A Select2 style input built in React",
   "main": "dist/selectr.js",
   "author": "Adam Lind <sunboxnet@gmail.com>",

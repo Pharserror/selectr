@@ -317,14 +317,14 @@ export default class Selectr extends Component {
   }
 
   onChange(event) {
-    this.setState({
-      currentUserInput: event.target.value,
-      page: 1
-    }, this.filterOptions.bind(this, event));
-
-    if (!!this.props.onChange) {
-      this.props.onChange(event.target.value);
-    }
+    this.setState(
+      {
+        currentUserInput: event.target.value,
+        page: 1
+      },
+      this.filterOptions.bind(this, event),
+      this.props.onChange(event, event.target.value)
+    );
   }
 
   onEnterTab(event) {
@@ -746,12 +746,14 @@ export default class Selectr extends Component {
       )
     };
 
-    this.setState(newState, () => {
-      this.refs.selectrInput.focus();
-      this.filterOptions(undefined, this.state.currentUserInput);
-    });
+    this.setState(
+      newState, () => {
+        this.refs.selectrInput.focus();
+        this.filterOptions(undefined, this.state.currentUserInput);
+      },
+      this.props.onSelectOption(option)
+    );
 
-    this.props.onSelectOption(option);
   }
 
   submitSelection(selection) {
@@ -848,6 +850,8 @@ Selectr.defaultProps = {
   multiple:                      false,
   noMoreOptionsNotice:           'No more options available',
   noMoreOptionsListItemClasses:  '',
+  onChange:                      () => false,
+  onSelectOption:                () => false,
   options:                       [],
   optionsListItemClass:          'list-item',
   pageSize:                      10,
